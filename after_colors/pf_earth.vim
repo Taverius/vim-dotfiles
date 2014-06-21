@@ -1,9 +1,9 @@
-highlight Folded      guifg=#8b8bcd guibg=#1e1e1e
+highlight Folded        guifg=#8b8bcd   guibg=#1e1e1e
+highlight! link     FoldColumn  Folded
 
-highlight link CursorLine ColorColumn
+highlight! link     CursorLine  CursorColumn
 
-highlight SpecialKey guifg=#4f4b42
+highlight SpecialKey    guifg=#4f4b42
 
-highlight SignColumn  guifg=fg      guibg=#2E2A26 gui=none
-let g:did_colour_signcolumn = 1
+highlight SignColumn    guifg=fg        guibg=#2E2A26   gui=none
 

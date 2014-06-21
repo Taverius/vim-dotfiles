@@ -1,6 +1,7 @@
-highlight Folded     guibg=#0a161f guifg=#1E415E
+highlight LineNr     guifg=#2e363d guibg=#13161a
 
-highlight LineNr     guibg=#13161a
-highlight SignColumn guibg=#13161a guifg=fg
-let g:did_colour_signcolumn = 1
+highlight Folded     guifg=#1E415E guibg=#0a161f
+highlight FoldColumn guifg=#1E415E guibg=#0a161f
+
+highlight SignColumn guifg=#2ed6d7 guibg=#13161a
 

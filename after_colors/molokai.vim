@@ -1,4 +1,4 @@
-highlight clear SignColumn
-highlight SignColumn guifg=#A6E22E guibg=#3B3A32
-let g:did_colour_signcolumn = 1
+highlight SignColumn guifg=#A6E22E guibg=#232526
 
+hi FoldColumn        guifg=#465457 guibg=#17191A
+hi Folded            guifg=#465457 guibg=#17191A

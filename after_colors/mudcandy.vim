@@ -1,4 +1,5 @@
-highlight Folded     gui=NONE   guifg=grey93   guibg=grey7
+highlight Folded    guifg=#1E415E   guibg=#211d1d   gui=none
+
 highlight! link FoldColumn Folded
 highlight! link SignColumn Identifier
 

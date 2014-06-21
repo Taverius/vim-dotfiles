@@ -1,6 +1,9 @@
-highlight Folded     guibg=grey20 guifg=SlateBlue3
+highlight Folded     guifg=SlateBlue3 guibg=grey20 gui=none
+highlight FoldColumn guifg=SlateBlue3 guibg=grey20 gui=none
 
-highlight LineNr     guibg=grey14
-highlight SignColumn guibg=grey14 guifg=fg
-let g:did_colour_signcolumn = 1
+highlight LineNr     guifg=burlywood3 guibg=grey14 gui=none
 
+highlight SignColumn guifg=gray       guibg=grey14 gui=none
+
+highlight CursorLine guibg=gray23
+highlight CursorColumn guibg=gray23

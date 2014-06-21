@@ -1,21 +1,9 @@
-if exists('g:did_colour_foldcolumn')
-    unlet g:did_colour_foldcolumn
-else
-    highlight clear FoldColumn
-    highlight link FoldColumn Folded
-endif
+" FoldColumn
+highlight link FoldColumn Folded
 
-if exists('g:did_colour_signcolumn')
-    unlet g:did_colour_signcolumn
-else
-    highlight clear SignColumn
-    highlight link SignColumn LineNr
-endif
+" SignColumn
+highlight link SignColumn LineNr
 
-if exists('g:did_colour_cursorcolumn')
-    unlet g:did_colour_cursorcolumn
-else
-    highlight clear CursorColumn
-    highlight link CursorColumn CursorLine
-endif
+" CursorColumn
+highlight link CursorColumn CursorLine
 
