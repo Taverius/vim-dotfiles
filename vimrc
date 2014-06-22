@@ -1316,14 +1316,11 @@ if has('eval')
     " Use the fuzzy matcher for everything
     call unite#filters#matcher_default#use(['matcher_fuzzy'])
     " Use the rank sorter for everything
-    call unite#filters#sorter_default#use(['sorter_rank'])
+    " call unite#filters#sorter_default#use(['sorter_rank'])
     " Filter .dotfiles and such
     call unite#custom_source('file_rec,file_rec/async,file_mru,file,buffer,grep',
                     \   'ignore_pattern', join([
-                    \       '\.git/',
-                    \       '\.hg/',
-                    \       '\.svn/',
-                    \       '\..*/'
+                    \       '\.[^\.]\+/',
                     \ ], '\|'))
     " Use ag for search
     if executable('ag')
