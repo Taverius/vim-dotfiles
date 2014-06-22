@@ -42,7 +42,7 @@ endif
 set shellslash
 
 " In Windows, can't find exe, when $PATH isn't contained $VIM.
-if $PATH !~? '\(^\|;\)' . escape($VIMRUNTIME, '\\') . '\(;\|$\)'
+if $PATH !~? '^' . escape($VIMRUNTIME, '\\') . ';'
     let $PATH = $VIMRUNTIME . ';' . $PATH
 endif
 
@@ -87,7 +87,15 @@ else
 
     " Libraries
     NeoBundle 'tpope/vim-repeat', {
-                \   'mappings' : '.',
+                \   'mappings' : [
+                \       [ 'n',
+                \           '.',
+                \           'u',
+                \           'U',
+                \           '<C-R>'
+                \       ]
+                \   ],
+                \   'function_prefix' : 'repeat'
                 \ }
     NeoBundle 'tomtom/tlib_vim'
     NeoBundle 'xolox/vim-misc'
