@@ -42,8 +42,8 @@ endif
 set shellslash
 
 " In Windows, can't find exe, when $PATH isn't contained $VIM.
-if $PATH !~? '\(^\|;\)' . escape($VIM, '\\') . '\(;\|$\)'
-    let $PATH = $VIM . ';' . $PATH
+if $PATH !~? '\(^\|;\)' . escape($VIMRUNTIME, '\\') . '\(;\|$\)'
+    let $PATH = $VIMRUNTIME . ';' . $PATH
 endif
 
 " Disable built-in plugins
@@ -51,6 +51,9 @@ let g:loaded_netrwPlugin = 1
 let g:loaded_2html_plugin = 1
 let g:loaded_vimballPlugin = 1
 
+" Set this here so plugin autload can use it
+let mapleader = ","     " With a map leader it's possible to do extra key combinations.
+let g:mapleader = ","   " like <leader>w saves the current file.
 
 " ====================================
 " ============ NeoBundle =============
@@ -62,10 +65,17 @@ filetype off            " Required
 
 call neobundle#begin(expand('~/vimfiles/bundle'))
 
+function! IsNeoCacheCurrent()
+    let l:cache = neobundle#get_rtp_dir() . '/cache.vim'
+    return filereadable(l:cache)
+                \ && (!len($MYVIMRC)
+                \   || getftime(expand(l:cache)) >= getftime(expand($MYVIMRC)))
+endfunction
+
 " NeoBundle Cache
-" if neobundle#has_cache()
-"     NeoBundleLoadCache
-" else
+if IsNeoCacheCurrent()
+    NeoBundleLoadCache
+else
     " Let NeoBundle manage NeoBundle
     " Required!
     NeoBundleFetch 'Shougo/neobundle.vim'
@@ -239,8 +249,8 @@ call neobundle#begin(expand('~/vimfiles/bundle'))
     NeoBundle 'jnurmine/Zenburn', {'script_type' : 'colors'}
     NeoBundle 'vim-scripts/zenesque.vim', {'script_type' : 'colors'}
 
-    " NeoBundleSaveCache
-" endif
+    NeoBundleSaveCache
+endif
 
 " End plugins
 call neobundle#end()
@@ -250,18 +260,6 @@ filetype plugin indent on
 
 " Prompt to install missing bundles
 NeoBundleCheck
-
-function! IsVimrcCheck()
-    if BufferHasFileCheck() && (expand('%:p') == $MYVIMRC)
-        return 1
-    else
-        return 0
-    endif
-endfunction
-augroup vimrcNeoBundleClearCache
-    autocmd!
-    autocmd BufWritePost ?* if IsVimrcCheck() | NeoBundleClearCache | endif
-augroup END
 
 
 " }}}
@@ -274,8 +272,8 @@ augroup END
 
 set number              " Show line numbers.
 set shiftwidth=4        " Indent 4 spaces by default.
-set softtabstop=0       " Use 4 spaces instead of a Tab.
-set tabstop=4           " Tabs use 4 spaces.
+set softtabstop=4       " Use 4 spaces instead of a Tab.
+set tabstop=8           " Tabs use 4 spaces.
 set shiftround          " Round indent (<,>) to multiples of 'shiftwidth'
 set expandtab           " Convert tabs to spaces.
 set lazyredraw          " Avoid redrawing the screen mid-command
@@ -524,9 +522,6 @@ augroup END
 " {{{
 
 
-let mapleader = ","     " With a map leader it's possible to do extra key combinations.
-let g:mapleader = ","   " like <leader>w saves the current file.
-
 nnoremap <silent> ;; ;
 vnoremap <silent> ;; ;
 nnoremap ; :
@@ -680,7 +675,7 @@ vmap V     <ESC>`<V`>
 vmap v     <ESC>`<v`>
 
 " Y behaves like D rather than like dd
-nnoremap Y y$
+" nnoremap Y y$
 
 " Smart way to move btw. windows.
 map <C-j> <C-W>j
