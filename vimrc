@@ -125,9 +125,12 @@ else
     NeoBundleLazy 'thinca/vim-unite-history', {
                 \   'unite_sources' : [ 'history/command', 'history/search' ]
                 \ }
+    NeoBundleLazy 'tsukkee/unite-tag', {
+                \   'unite_sources' : [ 'tag', 'tag/file', 'tag/include' ]
+                \ }
     NeoBundleLazy 'Shougo/echodoc.vim', {
-                \   'insert' : 1,
                 \   'autoload' : {
+                \       'insert' : 1,
                 \       'commands' : [ 'EchoDocEnable', 'EchoDocDisable' ],
                 \       'function_prefix' : 'echodoc'
                 \   }
@@ -144,25 +147,47 @@ else
     " Completion
     NeoBundleLazy 'Shougo/neocomplete.vim', {
                 \   'disabled' : !has('lua'),
-                \   'depends': 'Shougo/context_filetype.vim',
-                \   'insert': 1
+                \   'depends' : 'Shougo/context_filetype.vim',
+                \   'autoload' : {
+                \       'insert' : 1,
+                \       'on_source' : 'tsukkee/unite-tag'
+                \   }
                 \ }
     NeoBundleLazy 'Shougo/neocomplcache.vim', {
                 \   'disabled' : has('lua'),
-                \   'insert': 1
+                \   'autoload' : {
+                \       'insert' : 1,
+                \       'on_source' : 'tsukkee/unite-tag'
+                \   }
                 \ }
 
     " Tags
     NeoBundle 'xolox/vim-easytags', {
                 \   'depends' : 'xolox/vim-shell'
                 \ }
-    NeoBundle 'majutsushi/tagbar'
+    NeoBundleLazy 'majutsushi/tagbar', {
+                \   'commands' : [
+                \       'Tagbar',
+                \       'TagbarToggle',
+                \       'TagbarOpen',
+                \       'TagbarOpenAutoClose',
+                \       'TagbarClose',
+                \       'TagbarSetFoldlevel',
+                \       'TagbarShowTag',
+                \       'TagbarCurrentTag',
+                \       'TagbarGetTypeConfig',
+                \       'TagbarDebug',
+                \       'TagbarDebugEnd',
+                \       'TagbarTogglePause'
+                \   ]
+                \ }
     NeoBundleFetch 'jszakmeister/markdown2ctags'
 
     " Lightline
     NeoBundle 'itchyny/lightline.vim'
-    NeoBundle '844196/lightline-badwolf.vim',
-                \ { 'depends' : 'itchyny/lightline.vim' }
+    NeoBundle '844196/lightline-badwolf.vim', {
+                \   'on_source' : 'itchyny/lightline.vim'
+                \ }
 
     " Plugins
     NeoBundle 'tpope/vim-abolish'
