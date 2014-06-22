@@ -167,8 +167,7 @@ else
     " Plugins
     NeoBundle 'tpope/vim-abolish'
     NeoBundle 'tpope/vim-surround'
-    NeoBundle 'tpope/vim-fugitive',
-                \ { 'augroup' : 'fugitive'}
+    NeoBundle 'tpope/vim-fugitive'
     NeoBundle 'tomtom/tcomment_vim'
     NeoBundle 'dterei/VimBookmarking'
     NeoBundle 'junegunn/vim-easy-align'
@@ -185,7 +184,10 @@ else
     NeoBundle 'takac/vim-hardtime'
 
     " Vim Lint
-    NeoBundleLazy 'dahu/VimLint'
+    NeoBundleLazy 'dahu/VimLint', {
+                \   'commands' : 'VimLint',
+                \   'function_prefix' : 'vimlint'
+                \ }
 
     " Syntax/Indent
     NeoBundle 'sheerun/vim-polyglot'
@@ -992,7 +994,7 @@ if has('eval')
         noremap <silent> <leader>lu      :Histwin<CR>
     endif
 
-    let g:ctags_location = 'C:\\Dev\\Ctags\\ctags'
+    let g:ctags_location = expand('C:/Dev/Ctags/ctags')
 
 
     " Echodoc
@@ -1311,19 +1313,21 @@ if has('eval')
     let g:unite_force_overwrite_statusline = 0
     " Source options
     let g:unite_source_history_yank_enable = 1
-    let g:unite_source_rec_max_cache_files = 5000
+    " let g:unite_source_rec_max_cache_files = 5000
     " let g:unite_colorscheme_command = ''
     " Use the fuzzy matcher for everything
     call unite#filters#matcher_default#use(['matcher_fuzzy'])
     " Use the rank sorter for everything
     " call unite#filters#sorter_default#use(['sorter_rank'])
     " Filter .dotfiles and such
-    call unite#custom_source('file_rec,file_rec/async,file_mru,file,buffer,grep',
-                    \   'ignore_pattern', join([
-                    \       '\.[^\.]\+/',
-                    \ ], '\|'))
+    " call unite#custom_source('file_rec,file_rec/async,file_mru,file,buffer,grep',
+    " call unite#custom_source('file_rec,file_rec/async,grep',
+    "                 \   'ignore_pattern', join([
+    "                 \       '/\.[^\.]\+/',
+    "                 \ ], '\|'))
     " Use ag for search
     if executable('ag')
+        let g:unite_source_rec_async_command = 'ag'
         let g:unite_source_file_rec_async_command = 'ag'
         let g:unite_source_grep_command = 'ag'
         let g:unite_source_grep_default_opts =
