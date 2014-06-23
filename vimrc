@@ -43,7 +43,7 @@ set shellslash
 
 " In Windows, can't find exe, when $PATH isn't contained $VIM.
 if $PATH !~? '^' . escape($VIMRUNTIME, '\\') . ';'
-    let $PATH = $VIMRUNTIME . ';' . $PATH
+    let $PATH = $VIMRUNTIME.';'.$PATH
 endif
 
 " Disable built-in plugins
@@ -265,7 +265,7 @@ else
                 \       '<Plug>MoveBlock',
                 \       '<Plug>MoveLine',
                 \       [ 'vn',
-                \           'j', 'k'
+                \           '<A-j>', '<A-k>'
                 \       ]
                 \   ]
                 \ }
@@ -439,6 +439,12 @@ set fileformats=unix,dos,mac
 " ====================================
 " {{{
 
+if has('gui_running')
+    augroup vimrcVisualBell
+        autocmd!
+        autocmd GuiEnter * :silent set t_vb=
+    augroup END
+endif
 
 " Generic function to check if a buffer is backed by a file
 function! BufferHasFileCheck()
@@ -563,7 +569,7 @@ if has('viminfo')
 endif
 
 if has('persistent_undo')
-    set undodir=$HOME\vimfiles\undo
+    set undodir=~/vimfiles/undo
     set undofile
     augroup vimrcUndoFile
         autocmd!
@@ -579,7 +585,7 @@ if has('conceal')
 endif
 
 if has('mksession')
-    set viewdir=$HOME\vimfiles\view
+    set viewdir=~/vimfiles/view
     set viewoptions=cursor,folds,slash,unix
     let g:skipview_files = [
                 \ '[Vundle] Installer'
@@ -1200,7 +1206,7 @@ if has('eval')
     if has('python')
         let g:tagbar_type_markdown = {
                     \ 'ctagstype': 'markdown',
-                    \ 'ctagsbin' : $HOME.'bundles\markdown2ctags\markdown2ctags.py',
+                    \ 'ctagsbin' : expand('~/vimfiles/bundles/markdown2ctags/markdown2ctags.py'),
                     \ 'ctagsargs' : '-f - --sort=yes',
                     \ 'kinds' : [
                     \   's:sections',
@@ -1405,27 +1411,29 @@ if has('eval')
     let g:unite_winheight = 10
     let g:unite_data_directory = expand('~/vimfiles/.cache/unite')
     let g:unite_force_overwrite_statusline = 0
+    if has('gui_running') || (&termencoding ==? 'utf-8')
+        let g:unite_prompt='» '
+    endif
     " Source options
     let g:unite_source_history_yank_enable = 1
-    " let g:unite_source_rec_max_cache_files = 5000
-    " let g:unite_colorscheme_command = ''
+    let g:unite_colorscheme_command = 'SwitchToColorScheme'
     " Use the fuzzy matcher for everything
     call unite#filters#matcher_default#use(['matcher_fuzzy'])
     " Use the rank sorter for everything
-    " call unite#filters#sorter_default#use(['sorter_rank'])
+    call unite#filters#sorter_default#use(['sorter_rank'])
     " Filter .dotfiles and such
-    " call unite#custom_source('file_rec,file_rec/async,file_mru,file,buffer,grep',
     " call unite#custom_source('file_rec,file_rec/async,grep',
+    " call unite#custom_source('file_rec,file_rec/async,file_mru,file,buffer,grep',
     "                 \   'ignore_pattern', join([
     "                 \       '/\.[^\.]\+/',
     "                 \ ], '\|'))
+    let g:unite_source_rec_async_command = expand('C:/Dev/GnuWin32/bin-find/find.exe')
     " Use ag for search
     if executable('ag')
-        let g:unite_source_rec_async_command = 'ag'
-        let g:unite_source_file_rec_async_command = 'ag'
+        " let g:unite_source_rec_async_command = 'ag --follow --nocolor --nogroup -g ""'
         let g:unite_source_grep_command = 'ag'
         let g:unite_source_grep_default_opts =
-                    \ '-i --line-numbers --nocolor --nogroup --hidden'
+                    \ '-i --line-numbers --nocolor --nogroup'
         let g:unite_source_grep_recursive_opt = ''
     endif
 
@@ -1434,7 +1442,7 @@ if has('eval')
     " <leader>lb -> Buffer
     noremap <silent> <leader>lb         :Unite buffer<CR>
     " <leader>lf -> File
-    if executable('ag')
+    if executable(g:unite_source_rec_async_command)
         noremap <silent> <leader>lf     :Unite file_rec/async<CR>
     else
         noremap <silent> <leader>lf     :Unite file_rec<CR>
@@ -1533,7 +1541,7 @@ if has('menu')
     " <leader>lb -> Buffer
     execute 'noremenu <silent> Vimrc.Unite\ Buffer<Tab>'.mapleader.'lb :Unite buffer<CR>'
     " <leader>lf -> File
-    if executable('ag')
+    if executable(g:unite_source_rec_async_command)
         execute 'noremenu <silent> Vimrc.Unite\ File<Tab>'.mapleader.'lf :Unite file_rec/async<CR>'
     else
         execute 'noremenu <silent> Vimrc.Unite\ File<Tab>'.mapleader.'lf :Unite file_rec<CR>'
