@@ -97,6 +97,7 @@ else
                 \   ],
                 \   'function_prefix' : 'repeat'
                 \ }
+    NeoBundle 'vim-scripts/visualrepeat'
     NeoBundle 'tomtom/tlib_vim'
     NeoBundle 'xolox/vim-misc'
     NeoBundle 'xolox/vim-shell', {
@@ -123,25 +124,35 @@ else
     NeoBundleLazy 'tsukkee/unite-help'
     NeoBundleLazy 'ujihisa/unite-colorscheme'
     NeoBundleLazy 'thinca/vim-unite-history', {
-                \   'unite_sources' : [ 'history/command', 'history/search' ]
+                \   'unite_sources' : [
+                \       'history/command',
+                \       'history/search'
+                \   ]
                 \ }
     NeoBundleLazy 'tsukkee/unite-tag', {
-                \   'unite_sources' : [ 'tag', 'tag/file', 'tag/include' ]
+                \   'unite_sources' : [
+                \       'tag',
+                \       'tag/file',
+                \       'tag/include'
+                \   ]
                 \ }
     NeoBundleLazy 'Shougo/echodoc.vim', {
                 \   'autoload' : {
                 \       'insert' : 1,
-                \       'commands' : [ 'EchoDocEnable', 'EchoDocDisable' ],
+                \       'commands' : [
+                \           'EchoDocEnable',
+                \           'EchoDocDisable'
+                \       ],
                 \       'function_prefix' : 'echodoc'
                 \   }
                 \ }
 
     " Undo browsers
     NeoBundle 'sjl/gundo.vim', {
-                \   'disabled' : !has('python'),
+                \   'disabled' : !has('python')
                 \ }
     NeoBundle 'chrisbra/histwin.vim', {
-                \   'disabled' : has('python'),
+                \   'disabled' : has('python')
                 \ }
 
     " Completion
@@ -184,24 +195,80 @@ else
     NeoBundleFetch 'jszakmeister/markdown2ctags'
 
     " Lightline
-    NeoBundle 'itchyny/lightline.vim'
-    NeoBundle '844196/lightline-badwolf.vim', {
-                \   'on_source' : 'itchyny/lightline.vim'
+    NeoBundle '844196/lightline-badwolf.vim'
+    NeoBundle 'itchyny/lightline.vim', {
+                \   'depends' : '844196/lightline-badwolf.vim'
                 \ }
 
     " Plugins
-    NeoBundle 'tpope/vim-abolish'
-    NeoBundle 'tpope/vim-surround'
+    NeoBundleLazy 'tpope/vim-abolish', {
+                \   'depends' : 'tpope/vim-repeat',
+                \   'autoload' : {
+                \       'commands' : [
+                \           'Abolish',
+                \           'Subvert',
+                \           'S'
+                \       ],
+                \       'mappings' : [
+                \           [ 'n',
+                \               'cr',
+                \               '<Plug>Coerce'
+                \           ]
+                \       ]
+                \   }
+                \ }
+    NeoBundle 'tpope/vim-surround', {
+                \   'depends' : 'tpope/vim-repeat'
+                \ }
     NeoBundle 'tpope/vim-fugitive'
     NeoBundle 'tomtom/tcomment_vim'
-    NeoBundle 'dterei/VimBookmarking'
-    NeoBundle 'junegunn/vim-easy-align'
-    NeoBundle 'edsono/vim-matchit'
-    NeoBundle 'svermeulen/vim-easyclip'
+    NeoBundleLazy 'dterei/VimBookmarking', {
+                \   'commands' : [
+                \       'ToggleBookmark',
+                \       'ClearBookmarks',
+                \       'NextBookmark',
+                \       'PreviousBookmark'
+                \   ]
+                \ }
+    NeoBundle 'junegunn/vim-easy-align', {
+                \   'depends' : [
+                \       'tpope/vim-repeat',
+                \       'vim-scripts/visualrepeat'
+                \   ]
+                \ }
+    NeoBundleLazy 'edsono/vim-matchit', {
+                \   'commands' : 'MatchDebug',
+                \   'mappings' : [
+                \       '%', 'g%', '[%', ']%',
+                \       [ 'v',
+                \           'a%'
+                \       ]
+                \   ]
+                \ }
+    NeoBundle 'svermeulen/vim-easyclip', {
+                \   'depends' : 'tpope/vim-repeat'
+                \ }
     NeoBundle 'ciaranm/securemodelines'
     NeoBundle 'Raimondi/VimRegEx.vim'
-    NeoBundle 'justinmk/vim-sneak'
-    NeoBundle 'matze/vim-move'
+    NeoBundleLazy 'justinmk/vim-sneak', {
+                \   'depends' : 'tpope/vim-repeat',
+                \   'autoload' : {
+                \       'mappings' : [
+                \           '<Plug>Sneak',
+                \           '<Plug>(Sneak'
+                \       ],
+                \       'function_prefix' : 'sneak'
+                \   }
+                \ }
+    NeoBundleLazy 'matze/vim-move', {
+                \   'mappings' : [
+                \       '<Plug>MoveBlock',
+                \       '<Plug>MoveLine',
+                \       [ 'vn',
+                \           'j', 'k'
+                \       ]
+                \   ]
+                \ }
     NeoBundle 'jeetsukumaran/vim-numbertoggle'
 
     " Training
@@ -209,22 +276,24 @@ else
     NeoBundle 'takac/vim-hardtime'
 
     " Vim Lint
-    NeoBundleLazy 'dahu/VimLint', {
-                \   'commands' : 'VimLint',
-                \   'function_prefix' : 'vimlint'
-                \ }
+    NeoBundle 'dahu/VimLint'
 
-    " Syntax/Indent
+    " Filetypes
     NeoBundle 'sheerun/vim-polyglot'
     NeoBundle 'mic47/KSP-Syntax'
-    NeoBundle 'vim-scripts/NSIS-syntax-highlighting'
+    " NSIS
+    NeoBundle 'tbf-vimfiles', {
+                \   'type' : 'nosync'
+                \ }
+    NeoBundle 'elzr/vim-json'
+    NeoBundle 'plasticboy/vim-markdown'
 
     " Colorscheme Utilities
-    NeoBundle 'godlygeek/csapprox', {
+    NeoBundleLazy 'godlygeek/csapprox', {
                 \   'terminal' : 1,
                 \   'disabled' : !has('gui')
                 \ }
-    NeoBundle 'vim-scripts/colorsupport.vim', {
+    NeoBundleLazy 'vim-scripts/colorsupport.vim', {
                 \   'terminal' : 1,
                 \   'disabled' : has('gui')
                 \ }
@@ -259,11 +328,11 @@ else
     NeoBundle 'jonathanfilip/vim-lucius', {'script_type' : 'colors'}
     NeoBundle 'vim-scripts/manuscript', {'script_type' : 'colors'}
     NeoBundle 'vim-scripts/mdark.vim', {'script_type' : 'colors'}
-    NeoBundle 'jeetsukumaran/vim-mochalatte', {'script_type' : 'colors'}
     NeoBundle 'tomasr/molokai', {'script_type' : 'colors'}
     NeoBundle 'sickill/vim-monokai', {'script_type' : 'colors'}
     NeoBundle 'Aben/moria', {'script_type' : 'colors'}
     NeoBundle 'camelite/vim-nazca-colorscheme', {'script_type' : 'colors'}
+    NeoBundle 'jeetsukumaran/vim-nefertiti', {'script_type' : 'colors'}
     NeoBundle 'vim-scripts/obsidian', {'script_type' : 'colors'}
     NeoBundle 'Taverius/openbsd.vim', {
                 \   'type' : 'nosync',
