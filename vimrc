@@ -65,15 +65,8 @@ filetype off            " Required
 
 call neobundle#begin(expand('~/vimfiles/bundle'))
 
-function! IsNeoCacheCurrent()
-    let l:cache = neobundle#get_rtp_dir() . '/cache.vim'
-    return filereadable(l:cache)
-                \ && (!len($MYVIMRC)
-                \   || getftime(expand(l:cache)) >= getftime(expand($MYVIMRC)))
-endfunction
-
 " NeoBundle Cache
-if IsNeoCacheCurrent()
+if neobundle#has_fresh_cache()
     NeoBundleLoadCache
 else
     " Let NeoBundle manage NeoBundle
@@ -1418,19 +1411,19 @@ if has('eval')
     let g:unite_source_history_yank_enable = 1
     let g:unite_colorscheme_command = 'SwitchToColorScheme'
     " Use the fuzzy matcher for everything
-    call unite#filters#matcher_default#use(['matcher_fuzzy'])
+    " call unite#filters#matcher_default#use(['matcher_fuzzy'])
     " Use the rank sorter for everything
-    call unite#filters#sorter_default#use(['sorter_rank'])
+    " call unite#filters#sorter_default#use(['sorter_rank'])
     " Filter .dotfiles and such
     " call unite#custom_source('file_rec,file_rec/async,grep',
     " call unite#custom_source('file_rec,file_rec/async,file_mru,file,buffer,grep',
     "                 \   'ignore_pattern', join([
     "                 \       '/\.[^\.]\+/',
     "                 \ ], '\|'))
-    let g:unite_source_rec_async_command = expand('C:/Dev/GnuWin32/bin-find/find.exe')
+    " let g:unite_source_rec_async_command = expand('C:/Dev/GnuWin32/bin-find/find.exe')
     " Use ag for search
     if executable('ag')
-        " let g:unite_source_rec_async_command = 'ag --follow --nocolor --nogroup -g ""'
+        let g:unite_source_rec_async_command = 'ag --follow --nocolor --nogroup -g ""'
         let g:unite_source_grep_command = 'ag'
         let g:unite_source_grep_default_opts =
                     \ '-i --line-numbers --nocolor --nogroup'
