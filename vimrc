@@ -91,7 +91,6 @@ else
                 \   'function_prefix' : 'repeat'
                 \ }
     NeoBundle 'vim-scripts/visualrepeat'
-    NeoBundle 'tomtom/tlib_vim'
     NeoBundle 'xolox/vim-misc'
     NeoBundle 'xolox/vim-shell', {
                 \   'depends' : 'xolox/vim-misc'
@@ -214,6 +213,10 @@ else
                 \   'depends' : 'tpope/vim-repeat'
                 \ }
     NeoBundle 'tpope/vim-fugitive'
+    NeoBundle 'tpope/vim-characterize'
+    NeoBundle 'tpope/vim-unimpaired', {
+                \   'depends' : 'tpope/vim-repeat'
+                \ }
     NeoBundle 'tomtom/tcomment_vim'
     NeoBundleLazy 'dterei/VimBookmarking', {
                 \   'commands' : [
@@ -298,7 +301,7 @@ else
     NeoBundle 'vim-colorscheme-manager', {
                 \   'type' : 'nosync',
                 \   'depends' : [
-                \       'tomtom/tlib_vim',
+                \       'xolox/vim-misc',
                 \       'xolox/vim-colorscheme-switcher',
                 \       'vim-scripts/AfterColors.vim'
                 \   ]
@@ -686,10 +689,6 @@ inoremap <F1> <C-o>:set paste!<CR><C-o>:set paste?<CR>
 " F2 -> Toggle list
  noremap <F2>      :set list!<CR>:set list?<CR>
 inoremap <F2> <C-o>:set list!<CR><C-O>:set list?<CR>
-
-" F3 -> Toggle relative number
- noremap <silent> <F3>      <Plug>NumberToggleTrigger
-inoremap <silent> <F3> <C-o><Plug>NumberToggleTrigger
 
 if has('spell')
     set nospell
@@ -1178,6 +1177,8 @@ if has('eval')
     endif
     " }}}
 
+    " TComment
+    let g:tcomment_types = {'cfg' : '/ %s'}
 
     " Easytags {{{
     let g:easytags_cmd = g:ctags_location
@@ -1229,6 +1230,9 @@ if has('eval')
 
     " Numbertoggle
     let g:UseNumberToggleTrigger = 0
+    " F3 -> Toggle relative number
+     noremap <silent> <F3>      <Plug>NumberToggleTrigger
+    inoremap <silent> <F3> <C-o><Plug>NumberToggleTrigger
 
 
     " Easyclip
@@ -1249,14 +1253,14 @@ if has('eval')
     nmap <bs> <Plug>SneakPrevious
     xmap <bs> <Plug>SneakPrevious
     " 2-character Sneak (default)
-    nmap s <Plug>Sneak_s
-    nmap S <Plug>Sneak_S
+    nmap z <Plug>Sneak_s
+    nmap Z <Plug>Sneak_S
     " visual-mode
-    xmap s <Plug>Sneak_s
-    xmap S <Plug>Sneak_S
+    xmap z <Plug>Sneak_s
+    xmap Z <Plug>Sneak_S
     " operator-pending-mode
-    omap s <Plug>Sneak_s
-    omap S <Plug>Sneak_S
+    omap z <Plug>Sneak_s
+    omap Z <Plug>Sneak_S
     "replace 'f' with inclusive 1-char Sneak
     nmap f <Plug>Sneak_f
     nmap F <Plug>Sneak_F
@@ -1411,9 +1415,9 @@ if has('eval')
     let g:unite_source_history_yank_enable = 1
     let g:unite_colorscheme_command = 'SwitchToColorScheme'
     " Use the fuzzy matcher for everything
-    " call unite#filters#matcher_default#use(['matcher_fuzzy'])
+    call unite#filters#matcher_default#use(['matcher_fuzzy'])
     " Use the rank sorter for everything
-    " call unite#filters#sorter_default#use(['sorter_rank'])
+    call unite#filters#sorter_default#use(['sorter_rank'])
     " Filter .dotfiles and such
     " call unite#custom_source('file_rec,file_rec/async,grep',
     " call unite#custom_source('file_rec,file_rec/async,file_mru,file,buffer,grep',
