@@ -1178,7 +1178,7 @@ if has('eval')
     " }}}
 
     " TComment
-    let g:tcomment_types = {'cfg' : '/ %s'}
+    let g:tcomment_types = {'cfg' : '// %s'}
 
     " Easytags {{{
     let g:easytags_cmd = g:ctags_location
