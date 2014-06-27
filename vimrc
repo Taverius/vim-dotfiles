@@ -226,6 +226,7 @@ else
                 \       'PreviousBookmark'
                 \   ]
                 \ }
+    NeoBundle 'godlygeek/tabular'
     NeoBundle 'junegunn/vim-easy-align', {
                 \   'depends' : [
                 \       'tpope/vim-repeat',
@@ -1283,6 +1284,14 @@ if has('eval')
     vmap <Enter> <Plug>(EasyAlign)
     " Start interactive EasyAlign for a motion/text object (e.g. <Leader>aip)
     nmap <Leader>a <Plug>(EasyAlign)
+    " custom patterns
+    let g:easy_align_delimiters = {
+                \ 'n' : {
+                \       'pattern' : '\(\ =\|,\)',
+                \       'left_margin' : 0,
+                \       'mode_sequence' : 'lr*'
+                \   }
+                \ }
     " }}}
 
 
