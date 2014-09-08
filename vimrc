@@ -277,6 +277,7 @@ else
 
     " Filetypes
     NeoBundle 'sheerun/vim-polyglot'
+    NeoBundle 'vim-scripts/genindent.vim'
     NeoBundle 'mic47/KSP-Syntax'
     " NSIS
     NeoBundle 'tbf-vimfiles', {
@@ -500,6 +501,7 @@ if has('gui_running')
     " set guifont=Envy_Code_R:h10:cDEFAULT
     " set guifont=Terminus:h14:cDEFAULT
     " set guifont=Monofur:h14:cDEFAULT
+    set renderoptions=type:directx
                             " Default font.
     set clipboard=unnamed
                             " Clipboard is the unnamed register.
