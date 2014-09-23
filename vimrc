@@ -74,9 +74,7 @@ else
     NeoBundleFetch 'Shougo/neobundle.vim'
 
     " Headlights
-    NeoBundle 'mbadran/headlights', {
-                \   'disabled' : !has('python'),
-                \ }
+    NeoBundle 'mbadran/headlights'
 
     " Libraries
     NeoBundle 'tpope/vim-repeat', {
@@ -139,17 +137,15 @@ else
                 \   }
                 \ }
 
+    " Lusty
+    NeoBundle 'sjbach/lusty'
+
     " Undo browsers
-    NeoBundle 'sjl/gundo.vim', {
-                \   'disabled' : !has('python')
-                \ }
-    NeoBundle 'chrisbra/histwin.vim', {
-                \   'disabled' : has('python')
-                \ }
+    NeoBundle 'sjl/gundo.vim'
+    NeoBundle 'chrisbra/histwin.vim'
 
     " Completion
     NeoBundleLazy 'Shougo/neocomplete.vim', {
-                \   'disabled' : !has('lua'),
                 \   'depends' : 'Shougo/context_filetype.vim',
                 \   'autoload' : {
                 \       'insert' : 1,
@@ -157,7 +153,6 @@ else
                 \   }
                 \ }
     NeoBundleLazy 'Shougo/neocomplcache.vim', {
-                \   'disabled' : has('lua'),
                 \   'autoload' : {
                 \       'insert' : 1,
                 \       'on_source' : 'tsukkee/unite-tag'
@@ -218,14 +213,7 @@ else
                 \   'depends' : 'tpope/vim-repeat'
                 \ }
     NeoBundle 'tomtom/tcomment_vim'
-    NeoBundleLazy 'dterei/VimBookmarking', {
-                \   'commands' : [
-                \       'ToggleBookmark',
-                \       'ClearBookmarks',
-                \       'NextBookmark',
-                \       'PreviousBookmark'
-                \   ]
-                \ }
+    NeoBundle 'dterei/VimBookmarking'
     NeoBundle 'godlygeek/tabular'
     NeoBundle 'junegunn/vim-easy-align', {
                 \   'depends' : [
@@ -289,11 +277,9 @@ else
     " Colorscheme Utilities
     NeoBundleLazy 'godlygeek/csapprox', {
                 \   'terminal' : 1,
-                \   'disabled' : !has('gui')
                 \ }
     NeoBundleLazy 'vim-scripts/colorsupport.vim', {
                 \   'terminal' : 1,
-                \   'disabled' : has('gui')
                 \ }
     NeoBundle 'xolox/vim-colorscheme-switcher', {
                 \   'depends' : [
@@ -352,6 +338,27 @@ else
     NeoBundle 'vim-scripts/zenesque.vim', {'script_type' : 'colors'}
 
     NeoBundleSaveCache
+endif
+
+" Conditional disables
+if !has('python')
+    NeoBundleDisable 'mbadran/headlights'
+    NeoBundleDisable 'sjl/gundo.vim'
+else
+    NeoBundleDisable 'chrisbra/histwin.vim'
+endif
+if !has('ruby')
+    NeoBundleDisable 'sjbach/lusty'
+endif
+if !has('lua')
+    NeoBundleDisable 'Shougo/neocomplete.vim'
+else
+    NeoBundleDisable 'Shougo/neocomplcache.vim'
+endif
+if !has('gui')
+    NeoBundleDisable 'godlygeek/csapprox'
+else
+    NeoBundleDisable 'vim-scripts/colorsupport.vim'
 endif
 
 " End plugins
@@ -612,7 +619,7 @@ if has('mksession')
     " Autosave & Load Views.
     augroup vimrcAutoView
         autocmd!
-        autocmd BufWritePost,BufLeave,WinLeave ?* if MakeViewCheck() | mkview | endif
+        autocmd BufWritePost,BufLeave,WinLeave,FocusLost ?* if MakeViewCheck() | mkview | endif
         autocmd BufWinEnter ?* if MakeViewCheck() | silent loadview | endif
     augroup END
 endif
@@ -1181,7 +1188,7 @@ if has('eval')
     " }}}
 
     " TComment
-    let g:tcomment_types = {'cfg' : '// %s'}
+    let g:tcomment_types = {'craft' : '// %s'}
 
     " Easytags {{{
     let g:easytags_cmd = g:ctags_location
@@ -1445,15 +1452,17 @@ if has('eval')
         let g:unite_source_grep_recursive_opt = ''
     endif
 
-    " <leader>lg -> Grep
-    noremap <silent> <leader>lg         :Unite grep:.<CR>
-    " <leader>lb -> Buffer
-    noremap <silent> <leader>lb         :Unite buffer<CR>
-    " <leader>lf -> File
-    if executable(g:unite_source_rec_async_command)
-        noremap <silent> <leader>lf     :Unite file_rec/async<CR>
-    else
-        noremap <silent> <leader>lf     :Unite file_rec<CR>
+    if !has('ruby')
+        " <leader>lg -> Grep
+        noremap <silent> <leader>lg         :Unite grep:.<CR>
+        " <leader>lb -> Buffer
+        noremap <silent> <leader>lb         :Unite buffer<CR>
+        " <leader>lf -> File
+        if executable(g:unite_source_rec_async_command)
+            noremap <silent> <leader>lf     :Unite file_rec/async<CR>
+        else
+            noremap <silent> <leader>lf     :Unite file_rec<CR>
+        endif
     endif
     " <leader>lmf -> MRU File
     noremap <silent> <leader>lmf        :Unite neomru/file<CR>
@@ -1543,16 +1552,31 @@ if has('menu')
         execute 'noremenu <silent> Vimrc.Undo<Tab>'.mapleader.'lu :Histwin<CR>'
     endif
 
+    " Lusty
+    if has('ruby')
+        " <leader>lg -> Grep
+        execute 'noremenu <silent> Vimrc.Lusty\ Grep<Tab>'.mapleader.'lg :LustyBufferGrep<CR>'
+        " <leader>lb -> Buffer
+        execute 'noremenu <silent> Vimrc.Lusty\ Buffer<Tab>'.mapleader.'lb :LustyBufferExplorer<CR>'
+        " <leader>lf -> File
+        execute 'noremenu <silent> Vimrc.Lusty\ File<Tab>'.mapleader.'lf :LustyFilesystemExplorer<CR>'
+        " <leader>lr -> File At
+        execute 'noremenu <silent> Vimrc.Lusty\ File\ At<Tab>'.mapleader.'lf :LustyFilesystemExplorerFromHere<CR>'
+        " <leader>lj -> Buffer Juggler
+        execute 'noremenu <silent> Vimrc.Lusty\ Juggler<Tab>'.mapleader.'lf :LustyJuggler<CR>'
+    endif
     " Unite.vim
-    " <leader>lg -> Grep
-    execute 'noremenu <silent> Vimrc.Unite\ Grep<Tab>'.mapleader.'lg :Unite grep:.<CR>'
-    " <leader>lb -> Buffer
-    execute 'noremenu <silent> Vimrc.Unite\ Buffer<Tab>'.mapleader.'lb :Unite buffer<CR>'
-    " <leader>lf -> File
-    if executable(g:unite_source_rec_async_command)
-        execute 'noremenu <silent> Vimrc.Unite\ File<Tab>'.mapleader.'lf :Unite file_rec/async<CR>'
-    else
-        execute 'noremenu <silent> Vimrc.Unite\ File<Tab>'.mapleader.'lf :Unite file_rec<CR>'
+    if !has('ruby')
+        " <leader>lg -> Grep
+        execute 'noremenu <silent> Vimrc.Unite\ Grep<Tab>'.mapleader.'lg :Unite grep:.<CR>'
+        " <leader>lb -> Buffer
+        execute 'noremenu <silent> Vimrc.Unite\ Buffer<Tab>'.mapleader.'lb :Unite buffer<CR>'
+        " <leader>lf -> File
+        if executable(g:unite_source_rec_async_command)
+            execute 'noremenu <silent> Vimrc.Unite\ File<Tab>'.mapleader.'lf :Unite file_rec/async<CR>'
+        else
+            execute 'noremenu <silent> Vimrc.Unite\ File<Tab>'.mapleader.'lf :Unite file_rec<CR>'
+        endif
     endif
     " <leader>lmf -> MRU File
     execute 'noremenu <silent> Vimrc.Unite\ MRU\ File<Tab>'.mapleader.'lmf :Unite neomru/file<CR>'
