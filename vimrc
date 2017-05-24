@@ -34,8 +34,6 @@ if has('vim_starting')
     if v:progname =~? "evim"
         finish
     endif
-
-    set runtimepath+=~/vimfiles/bundle/neobundle.vim/
 endif
 
 " Backslash to forwardslash
@@ -56,320 +54,134 @@ let mapleader = ","     " With a map leader it's possible to do extra key combin
 let g:mapleader = ","   " like <leader>w saves the current file.
 
 " ====================================
-" ============ NeoBundle =============
+" ==============  Plug  ==============
 " ====================================
 " {{{
 
 
-filetype off            " Required
+" Required
+call plug#begin('~/vimfiles/plugged')
 
-call neobundle#begin(expand('~/vimfiles/bundle'))
+function! Cond(cond, ...)
+  let opts = get(a:000, 0, {})
+  return a:cond ? opts : extend(opts, { 'on': [], 'for': [] })
+endfunction
 
-" NeoBundle Cache
-if neobundle#has_fresh_cache()
-    NeoBundleLoadCache
-else
-    " Let NeoBundle manage NeoBundle
-    " Required!
-    NeoBundleFetch 'Shougo/neobundle.vim'
+" Headlights
+Plug 'mbadran/headlights', Cond(has('python'))
 
-    " Headlights
-    NeoBundle 'mbadran/headlights'
+" Libraries
+Plug 'tpope/vim-repeat'
+Plug 'vim-scripts/visualrepeat'
+Plug 'xolox/vim-misc'
+Plug 'xolox/vim-shell'
+Plug 'Shougo/context_filetype.vim'
+Plug 'Shougo/echodoc.vim'
 
-    " Libraries
-    NeoBundle 'tpope/vim-repeat', {
-                \   'mappings' : [
-                \       [ 'n',
-                \           '.',
-                \           'u',
-                \           'U',
-                \           '<C-R>'
-                \       ]
-                \   ],
-                \   'function_prefix' : 'repeat'
-                \ }
-    NeoBundle 'vim-scripts/visualrepeat'
-    NeoBundle 'xolox/vim-misc'
-    NeoBundle 'xolox/vim-shell', {
-                \   'depends' : 'xolox/vim-misc'
-                \ }
-    NeoBundleLazy 'Shougo/context_filetype.vim'
-    NeoBundle 'Shougo/vimproc.vim', {
-                \   'build' :
-                \       { 'windows' : 'tools/update-dll-mingw 32' }
-                \ }
+" CtrlP
+Plug 'ctrlpvim/ctrlp.vim'
+Plug 'FelikZ/ctrlp-py-matcher', Cond(has('python'))
+Plug 'sgur/ctrlp-extensions.vim'
+Plug 'DavidEGx/ctrlp-smarttabs'
+Plug 'kassio/ctrlp-bufline.vim'
+Plug 'ompugao/ctrlp-history'
+Plug 'mattn/ctrlp-mark'
+Plug 'DeaR/ctrlp-chdir'
+Plug 'hara/ctrlp-colorscheme'
+Plug 'ompugao/ctrlp-locate'
+Plug 'zeero/vim-ctrlp-help'
+Plug 'nmanandhar/vim-ctrlp-menu'
 
-    " Unite
-    NeoBundleLazy 'Shougo/unite.vim', {
-                \   'commands' : [
-                \       {
-                \           'name' : 'Unite',
-                \           'complete' : 'customlist,unite#complete_source'
-                \       },
-                \       'UniteWithCursorWord',
-                \       'UniteWithInput'
-                \   ]
-                \ }
-    NeoBundle 'Shougo/neomru.vim'
-    NeoBundleLazy 'tsukkee/unite-help'
-    NeoBundleLazy 'ujihisa/unite-colorscheme'
-    NeoBundleLazy 'thinca/vim-unite-history', {
-                \   'unite_sources' : [
-                \       'history/command',
-                \       'history/search'
-                \   ]
-                \ }
-    NeoBundleLazy 'tsukkee/unite-tag', {
-                \   'unite_sources' : [
-                \       'tag',
-                \       'tag/file',
-                \       'tag/include'
-                \   ]
-                \ }
-    NeoBundleLazy 'Shougo/echodoc.vim', {
-                \   'autoload' : {
-                \       'insert' : 1,
-                \       'commands' : [
-                \           'EchoDocEnable',
-                \           'EchoDocDisable'
-                \       ],
-                \       'function_prefix' : 'echodoc'
-                \   }
-                \ }
+" Undo browsers
+Plug 'sjl/gundo.vim', Cond(has('python'))
+Plug 'chrisbra/histwin.vim', Cond(!has('python'))
 
-    " Lusty
-    NeoBundle 'sjbach/lusty'
+" Completion
+Plug 'Shougo/neocomplete.vim', Cond(has('lua'))
+Plug 'prabirshrestha/asyncomplete.vim', Cond(!has('lua'))
+Plug 'Shougo/neco-syntax', Cond(!has('lua'))
+Plug 'prabirshrestha/asyncomplete.vim', Cond(!has('lua'))
+Plug 'prabirshrestha/asyncomplete-buffer.vim', Cond(!has('lua'))
+Plug 'prabirshrestha/asyncomplete-necovim.vim', Cond(!has('lua'))
+Plug 'prabirshrestha/asyncomplete-necosyntax.vim', Cond(!has('lua'))
 
-    " Undo browsers
-    NeoBundle 'sjl/gundo.vim'
-    NeoBundle 'chrisbra/histwin.vim'
+" Tags
+Plug 'diraol/vim-easytags'
+Plug 'majutsushi/tagbar'
 
-    " Completion
-    NeoBundleLazy 'Shougo/neocomplete.vim', {
-                \   'depends' : 'Shougo/context_filetype.vim',
-                \   'autoload' : {
-                \       'insert' : 1,
-                \       'on_source' : 'tsukkee/unite-tag'
-                \   }
-                \ }
-    NeoBundleLazy 'Shougo/neocomplcache.vim', {
-                \   'autoload' : {
-                \       'insert' : 1,
-                \       'on_source' : 'tsukkee/unite-tag'
-                \   }
-                \ }
+" Lightline
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 
-    " Tags
-    NeoBundle 'xolox/vim-easytags', {
-                \   'depends' : 'xolox/vim-shell'
-                \ }
-    NeoBundleLazy 'majutsushi/tagbar', {
-                \   'commands' : [
-                \       'Tagbar',
-                \       'TagbarToggle',
-                \       'TagbarOpen',
-                \       'TagbarOpenAutoClose',
-                \       'TagbarClose',
-                \       'TagbarSetFoldlevel',
-                \       'TagbarShowTag',
-                \       'TagbarCurrentTag',
-                \       'TagbarGetTypeConfig',
-                \       'TagbarDebug',
-                \       'TagbarDebugEnd',
-                \       'TagbarTogglePause'
-                \   ]
-                \ }
-    NeoBundleFetch 'jszakmeister/markdown2ctags'
+" Plugins
+Plug 'ciaranm/securemodelines'
+Plug 'godlygeek/tabular'
+Plug 'jeetsukumaran/vim-numbertoggle'
+Plug 'junegunn/vim-easy-align'
+Plug 'junegunn/vim-slash', { 'on': [], 'for': [] }
+Plug 'justinmk/vim-sneak'
+Plug 'MattesGroeger/vim-bookmarks'
+Plug 'matze/vim-move'
+Plug 'tpope/vim-abolish'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-characterize'
+Plug 'tpope/vim-unimpaired'
+Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-sleuth', { 'on': [], 'for': [] }
+Plug 'Raimondi/VimRegEx.vim'
+Plug 'svermeulen/vim-easyclip'
 
-    " Lightline
-    NeoBundle '844196/lightline-badwolf.vim'
-    NeoBundle 'itchyny/lightline.vim', {
-                \   'depends' : '844196/lightline-badwolf.vim'
-                \ }
+" Training
+Plug 'mrmargolis/dogmatic.vim'
 
-    " Plugins
-    NeoBundleLazy 'tpope/vim-abolish', {
-                \   'depends' : 'tpope/vim-repeat',
-                \   'autoload' : {
-                \       'commands' : [
-                \           'Abolish',
-                \           'Subvert',
-                \           'S'
-                \       ],
-                \       'mappings' : [
-                \           [ 'n',
-                \               'cr',
-                \               '<Plug>Coerce'
-                \           ]
-                \       ]
-                \   }
-                \ }
-    NeoBundle 'tpope/vim-surround', {
-                \   'depends' : 'tpope/vim-repeat'
-                \ }
-    NeoBundle 'tpope/vim-fugitive'
-    NeoBundle 'tpope/vim-characterize'
-    NeoBundle 'tpope/vim-unimpaired', {
-                \   'depends' : 'tpope/vim-repeat'
-                \ }
-    NeoBundle 'tomtom/tcomment_vim'
-    NeoBundle 'dterei/VimBookmarking'
-    NeoBundle 'godlygeek/tabular'
-    NeoBundle 'junegunn/vim-easy-align', {
-                \   'depends' : [
-                \       'tpope/vim-repeat',
-                \       'vim-scripts/visualrepeat'
-                \   ]
-                \ }
-    NeoBundleLazy 'edsono/vim-matchit', {
-                \   'commands' : 'MatchDebug',
-                \   'mappings' : [
-                \       '%', 'g%', '[%', ']%',
-                \       [ 'v',
-                \           'a%'
-                \       ]
-                \   ]
-                \ }
-    NeoBundle 'svermeulen/vim-easyclip', {
-                \   'depends' : 'tpope/vim-repeat'
-                \ }
-    NeoBundle 'ciaranm/securemodelines'
-    NeoBundle 'Raimondi/VimRegEx.vim'
-    NeoBundleLazy 'justinmk/vim-sneak', {
-                \   'depends' : 'tpope/vim-repeat',
-                \   'autoload' : {
-                \       'mappings' : [
-                \           '<Plug>Sneak',
-                \           '<Plug>(Sneak'
-                \       ],
-                \       'function_prefix' : 'sneak'
-                \   }
-                \ }
-    NeoBundleLazy 'matze/vim-move', {
-                \   'mappings' : [
-                \       '<Plug>MoveBlock',
-                \       '<Plug>MoveLine',
-                \       [ 'vn',
-                \           '<A-j>', '<A-k>'
-                \       ]
-                \   ]
-                \ }
-    NeoBundle 'jeetsukumaran/vim-numbertoggle'
+" Vim Lint
+Plug 'dahu/VimLint'
 
-    " Training
-    NeoBundle 'mrmargolis/dogmatic.vim'
-    NeoBundle 'takac/vim-hardtime'
+" Filetypes
+Plug 'sheerun/vim-polyglot'
+Plug 'chrisbra/csv.vim'
+Plug 'vim-scripts/genindent.vim'
+Plug 'elzr/vim-json'
+Plug 'plasticboy/vim-markdown'
 
-    " Vim Lint
-    NeoBundle 'dahu/VimLint'
+" Colorscheme Utilities
+Plug 'godlygeek/csapprox', Cond(has('gui'))
+Plug 'vim-scripts/colorsupport.vim', Cond(!has('gui'))
+Plug 'xolox/vim-colorscheme-switcher'
+Plug 'vim-scripts/AfterColors.vim'
 
-    " Filetypes
-    NeoBundle 'sheerun/vim-polyglot'
-    NeoBundle 'vim-scripts/genindent.vim'
-    NeoBundle 'mic47/KSP-Syntax'
-    " NSIS
-    NeoBundle 'tbf-vimfiles', {
-                \   'type' : 'nosync'
-                \ }
-    NeoBundle 'elzr/vim-json'
-    NeoBundle 'plasticboy/vim-markdown'
+" Colorschemes
+Plug 'danilo-augusto/vim-afterglow'
+Plug 'sjl/badwolf'
+Plug 'petobens/colorish'
+Plug 'blueshirts/darcula'
+Plug 'dracula/vim', { 'dir' : '~/vimfiles/plugged/dracula' }
+Plug 'whatyouhide/vim-gotham'
+Plug 'morhetz/gruvbox'
+Plug 'w0ng/vim-hybrid'
+Plug 'cocopon/iceberg.vim'
+Plug 'nanotech/jellybeans.vim'
+Plug 'tomasr/molokai'
+Plug 'KeitaNakamura/neodark.vim'
+Plug 'arcticicestudio/nord-vim'
+Plug 'rakr/vim-one'
+Plug 'NLKNguyen/papercolor-theme'
+Plug 'junegunn/seoul256.vim'
+Plug 'jacoborus/tender.vim'
+Plug 'chriskempson/tomorrow-theme', { 'rtp' : 'vim' }
+Plug 'KabbAmine/yowish.vim'
 
-    " Colorscheme Utilities
-    NeoBundleLazy 'godlygeek/csapprox', {
-                \   'terminal' : 1,
-                \ }
-    NeoBundleLazy 'vim-scripts/colorsupport.vim', {
-                \   'terminal' : 1,
-                \ }
-    NeoBundle 'xolox/vim-colorscheme-switcher', {
-                \   'depends' : [
-                \       'xolox/vim-misc'
-                \   ]
-                \ }
-    NeoBundle 'vim-colorscheme-manager', {
-                \   'type' : 'nosync',
-                \   'depends' : [
-                \       'xolox/vim-misc',
-                \       'xolox/vim-colorscheme-switcher',
-                \       'vim-scripts/AfterColors.vim'
-                \   ]
-                \ }
-    NeoBundle 'vim-scripts/AfterColors.vim'
+" Local stuff
+Plug '~/vimfiles/mine/vim-colorscheme-manager'
+" NSIS syntax
+Plug '~/vimfiles/mine/tbf-vimfiles'
 
-    " Colorschemes
-    NeoBundle 'sjl/badwolf', {'script_type' : 'colors'}
-    NeoBundle 'mgutz/vim-colors', {'script_type' : 'colors'}
-                " chance-of-storm, mudcandy
-    NeoBundle 'rainux/vim-desert-warm-256', {'script_type' : 'colors'}
-    NeoBundle 'biluncloud/desertEx', {'script_type' : 'colors'}
-    NeoBundle 'mattsacks/vim-eddie', {'script_type' : 'colors'}
-    NeoBundle 'geetarista/ego.vim', {'script_type' : 'colors'}
-    NeoBundle 'petobens/heraldish', {'script_type' : 'colors'}
-    NeoBundle 'nanotech/jellybeans.vim', {'script_type' : 'colors'}
-    NeoBundle 'guns/jellyx.vim', {'script_type' : 'colors'}
-    NeoBundle 'zeis/vim-kolor', {'script_type' : 'colors'}
-    NeoBundle 'vim-scripts/Liquid-Carbon', {'script_type' : 'colors'}
-    NeoBundle 'jonathanfilip/vim-lucius', {'script_type' : 'colors'}
-    NeoBundle 'vim-scripts/manuscript', {'script_type' : 'colors'}
-    NeoBundle 'vim-scripts/mdark.vim', {'script_type' : 'colors'}
-    NeoBundle 'tomasr/molokai', {'script_type' : 'colors'}
-    NeoBundle 'sickill/vim-monokai', {'script_type' : 'colors'}
-    NeoBundle 'Aben/moria', {'script_type' : 'colors'}
-    NeoBundle 'camelite/vim-nazca-colorscheme', {'script_type' : 'colors'}
-    NeoBundle 'jeetsukumaran/vim-nefertiti', {'script_type' : 'colors'}
-    NeoBundle 'vim-scripts/obsidian', {'script_type' : 'colors'}
-    NeoBundle 'Taverius/openbsd.vim', {
-                \   'type' : 'nosync',
-                \   'script_type' : 'colors'
-                \ }
-    NeoBundle 'vim-scripts/pf_earth.vim', {'script_type' : 'colors'}
-    NeoBundle 'Taverius/Royal-Colorschemes', {
-                \   'type' : 'nosync',
-                \   'script_type' : 'colors'
-                \ }
-    NeoBundle 'altercation/vim-colors-solarized', {'script_type' : 'colors'}
-    NeoBundle 'vim-scripts/Sorcerer', {'script_type' : 'colors'}
-    NeoBundle 'vim-scripts/twilight', {'script_type' : 'colors'}
-    NeoBundle 'kossnocorp/up.vim', {'script_type' : 'colors'}
-    NeoBundle 'shelbybark/vilight', {'script_type' : 'colors'}
-    NeoBundle 'orthecreedence/void.vim', {'script_type' : 'colors'}
-    NeoBundle 'vim-scripts/xorium.vim', {'script_type' : 'colors'}
-    NeoBundle 'jnurmine/Zenburn', {'script_type' : 'colors'}
-    NeoBundle 'vim-scripts/zenesque.vim', {'script_type' : 'colors'}
+" Vim-DevIcons has to be loaded last
+Plug 'ryanoasis/vim-devicons'
 
-    NeoBundleSaveCache
-endif
-
-" Conditional disables
-if !has('python')
-    NeoBundleDisable 'mbadran/headlights'
-    NeoBundleDisable 'sjl/gundo.vim'
-else
-    NeoBundleDisable 'chrisbra/histwin.vim'
-endif
-if !has('ruby')
-    NeoBundleDisable 'sjbach/lusty'
-endif
-if !has('lua')
-    NeoBundleDisable 'Shougo/neocomplete.vim'
-else
-    NeoBundleDisable 'Shougo/neocomplcache.vim'
-endif
-if !has('gui')
-    NeoBundleDisable 'godlygeek/csapprox'
-else
-    NeoBundleDisable 'vim-scripts/colorsupport.vim'
-endif
-
-" End plugins
-call neobundle#end()
-
-"Required
-filetype plugin indent on
-
-" Prompt to install missing bundles
-NeoBundleCheck
-
+" Required
+call plug#end()
 
 " }}}
 
@@ -420,7 +232,7 @@ set shortmess+=a        " Use [+]/[RO]/[w] for modified/readonly/written.
 set display=lastline,uhex
                         " Show as much as possible of last line,
                         " Show unprintable characters as <xx>.
-set shellxquote=""
+" set shellxquote=""
 
 if !isdirectory(expand('~/vimfiles/swap'))
     call mkdir(expand('~/vimfiles/swap'), 'p')
@@ -500,16 +312,13 @@ if has('cmdline_info')
 endif
 
 if has('gui_running')
-    " set guifont=Andale_Mono:h11:cDEFAULT
-    " set guifont=Anonymous_Pro:h12:cDEFAULT
-    set guifont=Consolas:h11:cDEFAULT
-    " set guifont=DejaVu_Sans_Mono:h11:cDEFAULT
-    " set guifont=Droid_Sans_Mono_Slashed:h11:cDEFAULT
-    " set guifont=Envy_Code_R:h10:cDEFAULT
-    " set guifont=Terminus:h14:cDEFAULT
-    " set guifont=Monofur:h14:cDEFAULT
-    set renderoptions=type:directx
+    " set guifont=Consolas:h11
+    " set guifont=Fantasque_Sans_Mono:h12
+    " set guifont=Input:h11
+    set guifont=Consolas_NF:h11
+    " set guifont=Input_NF:h11
                             " Default font.
+    set renderoptions=type:directx
     set clipboard=unnamed
                             " Clipboard is the unnamed register.
 
@@ -873,19 +682,9 @@ endif
 
 set background=dark
 
-let g:jellyx_show_whitespace = 1
-let g:moria_fontface = "mixed"
-let g:moria_style = "dark"
-let g:liquidcarbon_high_contrast = 1
-let g:lucius_style = "dark"
-let g:mochalatte_suppress_keymaps = 1
-let g:solarized_termcolors = 256
-let g:solarized_style = "dark"
-let g:solarized_underline = 0
-let g:zenesque_colors = 3
-
 let g:CSApprox_attr_map = { 'bold' : 'bold', 'italic' : '', 'sp' : '' }
 let g:CSApprox_use_showrgb = 1
+
 " }}}
 
 " ====================================
@@ -1002,6 +801,7 @@ else
 endif
 
 set fillchars=fold:-
+
 " }}}
 
 " ====================================
@@ -1089,6 +889,88 @@ endif " }}}
 
 if has('eval')
 
+    packadd! matchit
+
+    let g:ctags_location = expand('C:/Dev/Ctags/ctags')
+
+
+    " The Silver Searcher
+    if executable('ag')
+        " Use ag over grep
+        set grepprg=ag\ --nogroup\ --nocolor
+    endif
+
+
+    " CtrlP {{{
+
+    " When a file is already open, jump to it
+    let g:ctrlp_switch_buffer = 'et'
+
+    " ignore source control hidden dirs
+    let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
+
+    " MRU case insensitive
+    let g:ctrlp_mruf_case_sensitive = 0
+
+    " Use The Silver Searcher
+    if executable('ag')
+        " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
+        let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+
+        " ag is fast enough that CtrlP doesn't need to cache
+        let g:ctrlp_use_caching = 0
+    endif
+
+    " python matcher
+    if has('python')
+        let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
+    endif
+
+    " register extensions
+    let g:ctrlp_extensions = ['undo', 'smarttabs', 'buffertag', 'tag']
+
+    " tags options
+    let g:ctrlp_buftag_ctags_bin = g:ctags_location
+
+    " binds
+    " <leader>lg -> Search in current buffer
+    noremap <silent> <leader>lg         :CtrlPBufLine<CR>
+    " <leader>lb -> Search buffers
+    noremap <silent> <leader>lb         :CtrlPBuffer<CR>
+    " <leader>lf -> Search files
+    noremap <silent> <leader>lf         :CtrlP<CR>
+    " <leader>lr -> Search files local
+    noremap <silent> <leader>lr         :CtrlP .<CR>
+    " <leader>ll -> Search with Locate
+    noremap <silent> <leader>ll         :CtrlPLocate<CR>
+    " <Leader>lt -> Search for Tags
+    noremap <silent> <leader>lt         :CtrlPBufTag<CR>
+    " <leader>ldh -> Search and change working dir
+    noremap <silent> <leader>ldh        :CtrlPChdir<CR>
+    " <leader>ldl -> Search and change local working dir
+    noremap <silent> <leader>ldl        :CtrlPLchdir<CR>
+    " <leader>lhy -> Search Yank history
+    noremap <silent> <leader>lhy        :CtrlPYankring<CR>
+    " <leader>lhs -> Search search history
+    noremap <silent> <leader>lhs        :CtrlPSearchHistory<CR>
+    " <leader>lhc -> Search command history
+    noremap <silent> <leader>lhc        :CtrlPCmdHistory<CR>
+    " <leader>lmr -> Search MRU
+    noremap <silent> <leader>lmr        :CtrlPMRU<CR>
+    " <leader>lmm -> Search CtrlP Modes
+    noremap <silent> <leader>lmm        :CtrlPMenu<CR>
+    " <leader>lmk -> Search Marks
+    noremap <silent> <leader>lmk        :CtrlPMark<CR>
+    " <leader>lmh -> Search Help
+    noremap <silent> <leader>lmh        :CtrlPHelp<CR>
+    " <leader>lc -> Search Colorscheme
+    noremap <silent> <leader>lc         :CtrlPColorscheme<CR>
+    " <leader>ts -> Search for tabs
+    noremap <silent> <leader>ts         :CtrlPSmartTabs<CR>
+
+    " }}}
+
+
     " <leader>lu -> Undo
     if has('python')
         noremap <silent> <leader>lu      :GundoToggle<CR>
@@ -1096,22 +978,67 @@ if has('eval')
         noremap <silent> <leader>lu      :Histwin<CR>
     endif
 
-    let g:ctags_location = expand('C:/Dev/Ctags/ctags')
-
 
     " Echodoc
     let g:echodoc_enable_at_startup = 1
 
 
-    " NeoCompl(ete|Cache) {{{
-    let g:acp_enableAtStartup = 0
+    " AsyncComplete {{{
+    if !has('lua')
+        " Maps
+        inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+        inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+        inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<cr>"
+
+        " Sources
+        augroup vimrcAsyncCompleteSources
+            autocmd!
+            autocmd CompleteDone * if pumvisible() == 0 | pclose | endif
+            autocmd User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#buffer#get_source_options({
+                        \ 'name': 'buffer',
+                        \ 'whitelist': ['*'],
+                        \ 'blacklist': ['go'],
+                        \ 'completor': function('asyncomplete#sources#buffer#completor'),
+                        \ }))
+            autocmd User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#necosyntax#get_source_options({
+                        \ 'name': 'necosyntax',
+                        \ 'whitelist': ['*'],
+                        \ 'completor': function('asyncomplete#sources#necosyntax#completor'),
+                        \ }))
+            autocmd User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#necovim#get_source_options({
+                        \ 'name': 'necovim',
+                        \ 'whitelist': ['vim'],
+                        \ 'completor': function('asyncomplete#sources#necovim#completor'),
+                        \ }))
+        augroup END
+    endif
+    " }}}
+
+
+    " NeoComplete {{{
     if has('lua')
-        " NeoComplete.vim
+        let g:acp_enableAtStartup = 0
         let g:neocomplete#enable_at_startup = 1
         let g:neocomplete#enable_smart_case = 1
         let g:neocomplete#enable_camel_case = 1
+
         " Set path
         let g:neocomplete#data_directory = expand('~/vimfiles/.cache/neocomplete')
+
+        " Define dictionary.
+        let g:neocomplete#sources#dictionary#dictionaries = {
+                    \ 'default' : '',
+                    \ 'vimshell' : $HOME.'/.vimshell_hist',
+                    \ }
+
+        " Enable omni completion.
+        if !exists('g:neocomplete#sources#omni#input_patterns')
+            let g:neocomplete#sources#omni#input_patterns = {}
+        endif
+
+        " Ctags
+        let g:neocomplete#ctags_command = g:ctags_location
+
         " Key mappings
         " <CR>: close popup and save indent.
         inoremap <expr><CR>     neocomplete#close_popup() ."<CR>"
@@ -1122,78 +1049,28 @@ if has('eval')
         inoremap <expr><BS>     neocomplete#smart_close_popup()."\<C-h>"
         inoremap <expr><C-y>    neocomplete#close_popup()
         inoremap <expr><C-e>    neocomplete#cancel_popup()
-        " Enable omni completion.
-        if !exists('g:neocomplete#sources#omni#input_patterns')
-            let g:neocomplete#sources#omni#input_patterns = {}
-        endif
-        " Ctags
-        let g:neocomplete#ctags_command = g:ctags_location
-    else
-        " NeoComplCache
-        let g:neocomplcache_enable_at_startup = 1
-        let g:neocomplcache_enable_smart_case = 1
-        let g:neocomplcache_enable_camel_case_completion = 1
-        let g:neocomplcache_enable_underbar_completion = 1
-        " Set path
-        let g:neocomplcache_temporary_dir = expand('~/vimfiles/.cache/neocomplcache')
-        " Recommended key-mappings.
-        " <CR>: close popup and save indent.
-        inoremap <expr><CR>     neocomplcache#close_popup() ."\<CR>"
-        " <TAB>: completion.
-        inoremap <expr><TAB>    pumvisible() ? "\<C-n>" : "\<TAB>"
-        " <C-h>, <BS>: close popup and delete backword char.
-        inoremap <expr><C-h>    neocomplcache#smart_close_popup()."\<C-h>"
-        inoremap <expr><BS>     neocomplcache#smart_close_popup()."\<C-h>"
-        inoremap <expr><C-y>    neocomplcache#close_popup()
-        inoremap <expr><C-e>    neocomplcache#cancel_popup()
-        " Enable omni completion.
-        if !exists('g:neocomplcache_omni_patterns')
-            let g:neocomplcache_omni_patterns = {}
-        endi
-        " Ctags
-        let g:neocomplcache_ctags_program = g:ctags_location
+        inoremap <expr><C-g>    neocomplete#undo_completion()
+        inoremap <expr><C-l>    neocomplete#complete_common_string()
     endif
     " }}}
 
 
-    " NeoMRU
-    let g:neomru#file_mru_path = expand('~/vimfiles/.cache/neomru/file')
-    let g:neomru#directory_mru_path = expand('~/vimfiles/.cache/neomru/directory')
-
-
-    " Bookmarking {{{
+    " vim-bookmarks {{{
     " F5 -> Toggle Bookmark
     " F6 -> Next Bookmark
     " F7 -> Previous Bookmark
-     noremap <silent> <F5>      :ToggleBookmark<CR>
-    inoremap <silent> <F5> <C-o>:ToggleBookmark<CR>
-     noremap <silent> <F6>      :NextBookmark<CR>
-    inoremap <silent> <F6> <C-o>:NextBookmark<CR>
-     noremap <silent> <F7>      :PreviousBookmark<CR>
-    inoremap <silent> <F7> <C-o>:PreviousBookmark<CR>
-    let g:bookmarking_menu = 0
-    if has('signs')
-        function! SetBookmarkStyle()
-            if has('gui_running') || (&termencoding ==? 'utf-8')
-                sign define bookmark text=»» texthl=SignColumn
-            else
-                sign define bookmark text=>> texthl=SignColumn
-            endif
-        endfunction
-        augroup vimrcBookmarking
-            autocmd!
-            autocmd VimEnter * call SetBookmarkStyle()
-        augroup END
-    endif
+    let g:bookmark_no_default_key_mappings = 1
+    let g:bookmark_manage_per_buffer = 1
+    nnoremap <silent> <F5>      :BookmarkToggle<CR>
+    nnoremap <silent> <F6>      :BookmarkNext<CR>
+    nnoremap <silent> <F7>      :BookmarkPrev<CR>
     " }}}
 
-    " TComment
-    let g:tcomment_types = {'craft' : '// %s'}
 
     " Easytags {{{
     let g:easytags_cmd = g:ctags_location
-    " let g:easytags_ctags_version = '5.8'
-    " let g:easytags_suppress_ctags_warning = 1
+    " async is still bork
+    " let g:easytags_async = 1
     let g:easytags_ignored_filetypes = '^\(bat|vba|tex|viki\)$'
     let g:easytags_by_filetype = expand('~/vimfiles/.cache/easytags')
     let g:easytags_python_enabled = has('python')
@@ -1202,27 +1079,11 @@ if has('eval')
 
     " TagBar {{{
     " <leader>lt -> TagBar
-    noremap <silent> <leader>lt      :TagbarToggle<CR>
+    " noremap <silent> <leader>lt      :TagbarToggle<CR>
     let g:tagbar_ctags_bin = g:ctags_location
     let g:tagbar_left = 0
     let g:tagbar_width = 40
     let g:tagbar_usearrows = 1
-    if has('python')
-        let g:tagbar_type_markdown = {
-                    \ 'ctagstype': 'markdown',
-                    \ 'ctagsbin' : expand('~/vimfiles/bundles/markdown2ctags/markdown2ctags.py'),
-                    \ 'ctagsargs' : '-f - --sort=yes',
-                    \ 'kinds' : [
-                    \   's:sections',
-                    \   'i:images'
-                    \ ],
-                    \ 'sro' : '|',
-                    \ 'kind2scope' : {
-                    \   's' : 'section',
-                    \ },
-                    \ 'sort': 0,
-                    \ }
-    endif
     " }}}
 
 
@@ -1304,204 +1165,10 @@ if has('eval')
     " }}}
 
 
-    " Hardtime {{{
-    let g:hardtime_default_on = 1
-    let g:list_of_normal_keys = [ "h", "j", "k", "l", "-", "+" ]
-    let g:list_of_visual_keys = []
-    let g:hardtime_allow_different_key = 1
-    let g:hardtime_maxcount = 2
-    let g:hardtime_ignore_buffer_patterns = [
-                \ '__Tagbar__',
-                \ '__Gundo__',
-                \ 'Undo_Tree'
-                \ ]
-    " }}}
-
-
-    " Lightline {{{
-    let g:lightline = {
-                \ 'colorscheme': 'badwolf',
-                \ 'mode_map': { 'c': 'NORMAL' },
-                \ 'active': {
-                \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'filename' ] ],
-                \   'right': [ [ 'lineinfo' ], [ 'percent' ], [ 'colorschemeinfo', 'spellinfo', 'fileformat', 'fileencoding', 'filetype' ] ]
-                \ },
-                \ 'component_function': {
-                \   'modified': 'MyModified',
-                \   'readonly': 'MyReadonly',
-                \   'fugitive': 'MyFugitive',
-                \   'filename': 'MyFilename',
-                \   'fileformat': 'MyFileformat',
-                \   'filetype': 'MyFiletype',
-                \   'fileencoding': 'MyFileencoding',
-                \   'colorschemeinfo': 'MyColorscheme',
-                \   'spellinfo': 'MySpell',
-                \   'mode': 'MyMode'
-                \ },
-                \ 'separator': { 'left': '', 'right': '' },
-                \ 'subseparator': { 'left': '|', 'right': '|' }
-                \ }
-
-    let g:lightline_modro_exclude = 'help\|gundo'
-
-    function! MyModified()
-        return &ft =~ g:lightline_modro_exclude ? '' : &modified ? '+' : &modifiable ? '' : '-'
-    endfunction
-
-    function! MyReadonly()
-        return &ft !~? g:lightline_modro_exclude && &readonly ? 'x' : ''
-    endfunction
-
-    function! MyFilename()
-        let l:fname = expand('%:t')
-        return l:fname == '__Tagbar__' ? g:lightline.fname :
-             \ l:fname =~ '__Gundo' ? '' :
-             \ l:fname == 'Undo_Tree' ? '' :
-             \ &ft == 'unite' ? unite#get_status_string() :
-             \ ('' != MyReadonly() ? MyReadonly() . ' ' : '') .
-             \ ('' != fname ? fname : '[No Name]') .
-             \ ('' != MyModified() ? ' ' . MyModified() : '')
-    endfunction
-
-    function! MyFugitive()
-        let l:fnamex = 'Tagbar\|Gundo\|Undo_Tree'
-        let l:ftypex = 'vimfiler'
-        try
-            if expand('%:t') !~? l:fnamex && &ft !~? l:ftypex && exists('*fugitive#head')
-                let mark = ''  " edit here for cool mark
-                let _ = fugitive#head()
-                return strlen(_) ? mark._ : ''
-            endif
-        catch
-        endtry
-        return ''
-    endfunction
-
-    function! MyFileformat()
-        return winwidth(0) > 70 ? &fileformat : ''
-    endfunction
-
-    function! MyFiletype()
-        return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype : 'no ft') : ''
-    endfunction
-
-    function! MyFileencoding()
-        return winwidth(0) > 70 ? (strlen(&fenc) ? &fenc : &enc) : ''
-    endfunction
-
-    function! MyMode()
-        let l:fname = expand('%:t')
-        return l:fname == '__Tagbar__' ? 'Tagbar' :
-             \ l:fname == 'Undo_Tree' ? 'Undo' :
-             \ l:fname == '__Gundo__' ? 'Gundo' :
-             \ l:fname == '__Gundo_Preview__' ? 'Gundo Preview' :
-             \ &ft == 'unite' ? 'Unite' :
-             \ winwidth(0) > 60 ? lightline#mode() : ''
-    endfunction
-
-    function! MyColorscheme()
-        return winwidth(0) > 90 ? (exists('g:colors_name') ? g:colors_name : '') : ''
-    endfunction
-
-    function! MySpell()
-        if has('spell')
-            let l:spell_enabled = ( &spell ) ? ':e' : ':d'
-            return winwidth(0) > 80 ? (get(g:my_lang_codes, g:MY_LANG_IDX, "none").l:spell_enabled) : ''
-        endif
-        return ''
-    endfunction
-
-    let g:tagbar_status_func = 'TagbarStatusFunc'
-
-    function! TagbarStatusFunc(current, sort, fname, ...) abort
-        let g:lightline.fname = a:fname
-        return lightline#statusline(0)
-    endfunction
-    " }}}
-
-
-    " Unite {{{
-    let g:unite_enable_start_insert = 1
-    let g:unite_split_rule = "botright"
-    let g:unite_winheight = 10
-    let g:unite_data_directory = expand('~/vimfiles/.cache/unite')
-    let g:unite_force_overwrite_statusline = 0
-    if has('gui_running') || (&termencoding ==? 'utf-8')
-        let g:unite_prompt='» '
-    endif
-    " Source options
-    let g:unite_source_history_yank_enable = 1
-    let g:unite_colorscheme_command = 'SwitchToColorScheme'
-    " Use the fuzzy matcher for everything
-    call unite#filters#matcher_default#use(['matcher_fuzzy'])
-    " Use the rank sorter for everything
-    call unite#filters#sorter_default#use(['sorter_rank'])
-    " Filter .dotfiles and such
-    " call unite#custom_source('file_rec,file_rec/async,grep',
-    " call unite#custom_source('file_rec,file_rec/async,file_mru,file,buffer,grep',
-    "                 \   'ignore_pattern', join([
-    "                 \       '/\.[^\.]\+/',
-    "                 \ ], '\|'))
-    " let g:unite_source_rec_async_command = expand('C:/Dev/GnuWin32/bin-find/find.exe')
-    " Use ag for search
-    if executable('ag')
-        let g:unite_source_rec_async_command = 'ag --follow --nocolor --nogroup -g ""'
-        let g:unite_source_grep_command = 'ag'
-        let g:unite_source_grep_default_opts =
-                    \ '-i --line-numbers --nocolor --nogroup'
-        let g:unite_source_grep_recursive_opt = ''
-    endif
-
-    if !has('ruby')
-        " <leader>lg -> Grep
-        noremap <silent> <leader>lg         :Unite grep:.<CR>
-        " <leader>lb -> Buffer
-        noremap <silent> <leader>lb         :Unite buffer<CR>
-        " <leader>lf -> File
-        if executable(g:unite_source_rec_async_command)
-            noremap <silent> <leader>lf     :Unite file_rec/async<CR>
-        else
-            noremap <silent> <leader>lf     :Unite file_rec<CR>
-        endif
-    endif
-    " <leader>lmf -> MRU File
-    noremap <silent> <leader>lmf        :Unite neomru/file<CR>
-    " <leader>lmd -> MRU Directory
-    noremap <silent> <leader>lmd        :Unite neomru/directory<CR>
-    " <leader>lhy -> Yank History
-    noremap <silent> <leader>lhy        :Unite history/yank<CR>
-    " <leader>lhs -> Search History
-    noremap <silent> <leader>lhs        :Unite history/search<CR>
-    " <leader>lhc -> Command History
-    noremap <silent> <leader>lhc        :Unite history/command<CR>
-    " <leader>lc -> Colorscheme
-    noremap <silent> <leader>lc         :Unite colorscheme -auto-preview<CR>
-
-    augroup vimrcUniteSettings
-        autocmd!
-        autocmd FileType unite call s:unite_my_settings()
-    augroup END
-    function! <SID>UniteReverseFilters()
-        let l:reverse = 'sorter_reverse'
-        let l:filters = unite#mappings#get_current_filters()
-        if index(l:filters, l:reverse) == -1
-            call add(l:filters, l:reverse)
-        else
-            call filter(l:filters, 'v:val != '.l:reverse)
-        endif
-        call unite#mappings#set_current_filters(l:filters)
-    endfunction
-    function! s:unite_my_settings()
-        imap <buffer> <C-j> <Plug>(unite_select_next_line)
-        imap <buffer> <C-k> <Plug>(unite_select_previous_line)
-        imap <silent><buffer><expr> <C-x> unite#do_action('split')
-        imap <silent><buffer><expr> <C-v> unite#do_action('vsplit')
-        imap <buffer> <S-CR> <Plug>(unite_quick_match_choose_action)
-        imap <silent><buffer> <C-s> <C-o>:call <SID>UniteReverseFilters()<CR>
-
-        nmap <buffer> <ESC> <Plug>(unite_exit)
-    endfunction
-    " }}}
+    " Airline
+    let g:airline_powerline_fonts = 1
+    let g:airline#extensions#tagbar#enabled = 0
+    let g:airline#extensions#wordcount#enabled = 0
 
 endif
 " }}}
@@ -1536,14 +1203,11 @@ if has('menu')
     " F5 -> Toggle Bookmark
     " F6 -> Next Bookmark
     " F7 -> Previous Bookmark
-    anoremenu <silent> Vimrc.Toggle\ Bookmark<Tab><F5>   :ToggleBookmark<CR>
-    anoremenu <silent> Vimrc.Next\ Bookmark<Tab><F6>     :NextBookmark<CR>
-    anoremenu <silent> Vimrc.Previous\ Bookmark<Tab><F7> :PreviousBookmark<CR>
+    anoremenu <silent> Vimrc.Toggle\ Bookmark<Tab><F5>   :BookmarkToggle<CR>
+    anoremenu <silent> Vimrc.Next\ Bookmark<Tab><F6>     :BookmarkNext<CR>
+    anoremenu <silent> Vimrc.Previous\ Bookmark<Tab><F7> :BookmarkPrev<CR>
 
     menu Vimrc.-BookmarkSep- :
-
-    " <leader>lt -> TagBar
-    execute 'noremenu <silent> Vimrc.Tagbar<Tab>'.mapleader.'lt :TagbarToggle<CR>'
 
     " <leader>lu -> Undo
     if has('python')
@@ -1552,44 +1216,43 @@ if has('menu')
         execute 'noremenu <silent> Vimrc.Undo<Tab>'.mapleader.'lu :Histwin<CR>'
     endif
 
-    " Lusty
-    if has('ruby')
-        " <leader>lg -> Grep
-        execute 'noremenu <silent> Vimrc.Lusty\ Grep<Tab>'.mapleader.'lg :LustyBufferGrep<CR>'
-        " <leader>lb -> Buffer
-        execute 'noremenu <silent> Vimrc.Lusty\ Buffer<Tab>'.mapleader.'lb :LustyBufferExplorer<CR>'
-        " <leader>lf -> File
-        execute 'noremenu <silent> Vimrc.Lusty\ File<Tab>'.mapleader.'lf :LustyFilesystemExplorer<CR>'
-        " <leader>lr -> File At
-        execute 'noremenu <silent> Vimrc.Lusty\ File\ At<Tab>'.mapleader.'lf :LustyFilesystemExplorerFromHere<CR>'
-        " <leader>lj -> Buffer Juggler
-        execute 'noremenu <silent> Vimrc.Lusty\ Juggler<Tab>'.mapleader.'lf :LustyJuggler<CR>'
-    endif
-    " Unite.vim
-    if !has('ruby')
-        " <leader>lg -> Grep
-        execute 'noremenu <silent> Vimrc.Unite\ Grep<Tab>'.mapleader.'lg :Unite grep:.<CR>'
-        " <leader>lb -> Buffer
-        execute 'noremenu <silent> Vimrc.Unite\ Buffer<Tab>'.mapleader.'lb :Unite buffer<CR>'
-        " <leader>lf -> File
-        if executable(g:unite_source_rec_async_command)
-            execute 'noremenu <silent> Vimrc.Unite\ File<Tab>'.mapleader.'lf :Unite file_rec/async<CR>'
-        else
-            execute 'noremenu <silent> Vimrc.Unite\ File<Tab>'.mapleader.'lf :Unite file_rec<CR>'
-        endif
-    endif
-    " <leader>lmf -> MRU File
-    execute 'noremenu <silent> Vimrc.Unite\ MRU\ File<Tab>'.mapleader.'lmf :Unite neomru/file<CR>'
-    " <leader>lmd -> MRU Directory
-    execute 'noremenu <silent> Vimrc.Unite\ MRU\ Directory<Tab>'.mapleader.'lmd :Unite neomru/directory<CR>'
-    " <leader>lhy -> Yank History
-    execute 'noremenu <silent> Vimrc.Unite\ Yank\ History<Tab>'.mapleader.'lhy :Unite history/yank<CR>'
-    " <leader>lhs -> Search History
-    execute 'noremenu <silent> Vimrc.Unite\ Search\ History<Tab>'.mapleader.'lhs :Unite history/search<CR>'
-    " <leader>lhc -> Command History
-    execute 'noremenu <silent> Vimrc.Unite\ Command\ History<Tab>'.mapleader.'lhc :Unite history/command<CR>'
-    " <leader>lc -> Colorscheme
-    execute 'noremenu <silent> Vimrc.Unite\ Colorschemes<Tab>'.mapleader.'lc :Unite colorscheme -auto-preview<CR>'
+    " <leader>lt -> TagBar
+    " execute 'noremenu <silent> Vimrc.Tagbar<Tab>'.mapleader.'lt :TagbarToggle<CR>'
+
+    " <leader>lg -> Search in current buffer
+    execute 'noremenu <silent> Vimrc.CtrlP\ Grep<Tab>'.mapleader.'lg :CtrlPBufLine<CR>'
+    " <leader>lb -> Search buffers
+    execute 'noremenu <silent> Vimrc.CtrlP\ Buffers<Tab>'.mapleader.'lb :CtrlPBuffer<CR>'
+    " <leader>lf -> Search files
+    execute 'noremenu <silent> Vimrc.CtrlP\ Files<Tab>'.mapleader.'lf :CtrlP<CR>'
+    " <leader>lr -> Search files local
+    execute 'noremenu <silent> Vimrc.CtrlP\ Local\ Files<Tab>'.mapleader.'lr :CtrlP .<CR>'
+    " <leader>ll -> Search with Locate
+    execute 'noremenu <silent> Vimrc.CtrlP\ Locate<Tab>'.mapleader.'ll :CtrlPLocate<CR>'
+    " <leader>lt -> Search for Tags
+    execute 'noremenu <silent> Vimrc.CtrlP\ Tags<Tab>'.mapleader.'lt :CtrlPBufTag<CR>'
+    " <leader>ldh -> Search and change working dir
+    execute 'noremenu <silent> Vimrc.CtrlP\ Chdir<Tab>'.mapleader.'ldh :CtrlPChdir<CR>'
+    " <leader>ldl -> Search and change local working dir
+    execute 'noremenu <silent> Vimrc.CtrlP\ LChdir<Tab>'.mapleader.'ldl :CtrlPLchdir<CR>'
+    " <leader>lhy -> Search Yank history
+    execute 'noremenu <silent> Vimrc.CtrlP\ Yank<Tab>'.mapleader.'lhy :CtrlPYankring<CR>'
+    " <leader>lhs -> Search search history
+    execute 'noremenu <silent> Vimrc.CtrlP\ Search<Tab>'.mapleader.'lhs :CtrlPSearchHistory<CR>'
+    " <leader>lhc -> Search command history
+    execute 'noremenu <silent> Vimrc.CtrlP\ CMD<Tab>'.mapleader.'lhc :CtrlPCmdHistory<CR>'
+    " <leader>lmr -> Search MRU
+    execute 'noremenu <silent> Vimrc.CtrlP\ MRU<Tab>'.mapleader.'lmr :CtrlPMRU<CR>'
+    " <leader>lmm -> Search CtrlP Modes
+    execute 'noremenu <silent> Vimrc.CtrlP\ CtrlP<Tab>'.mapleader.'lmm :CtrlPMenu<CR>'
+    " <leader>lmk -> Search Marks
+    execute 'noremenu <silent> Vimrc.CtrlP\ Marks<Tab>'.mapleader.'lmk :CtrlPMark<CR>'
+    " <leader>lmh -> Search Help
+    execute 'noremenu <silent> Vimrc.CtrlP\ Help<Tab>'.mapleader.'lmh :CtrlPHelp<CR>'
+    " <leader>lc -> Search Colorscheme
+    execute 'noremenu <silent> Vimrc.CtrlP\ Colors<Tab>'.mapleader.'lc :CtrlPColorscheme<CR>'
+    " <leader>ts -> Search for tabs
+    execute 'noremenu <silent> Vimrc.CtrlP\ Tabs<Tab>'.mapleader.'ts :CtrlPSmartTabs<CR>'
 
     menu Vimrc.-MainMenuSep- :
 endif
@@ -1708,3 +1371,5 @@ endif " }}}
 
 
 " }}}
+
+"   vim:    foldmethod=marker
