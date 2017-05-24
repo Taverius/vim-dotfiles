@@ -6,3 +6,6 @@
 /view
 .*
 viminfo
+/autoload/
+/mine/
+/plugged/
