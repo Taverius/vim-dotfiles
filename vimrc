@@ -69,8 +69,6 @@ Plug 'DavidEGx/ctrlp-smarttabs'
 Plug 'kassio/ctrlp-bufline.vim'
 Plug 'ompugao/ctrlp-history'
 Plug 'mattn/ctrlp-mark'
-Plug 'DeaR/ctrlp-chdir'
-Plug 'ompugao/ctrlp-locate'
 Plug 'zeero/vim-ctrlp-help'
 Plug 'nmanandhar/vim-ctrlp-menu'
 
@@ -111,6 +109,7 @@ Plug 'junegunn/vim-slash'
 Plug 'justinmk/vim-sneak'
 Plug 'MattesGroeger/vim-bookmarks'
 Plug 'matze/vim-move'
+Plug 'mhinz/vim-grepper'
 Plug 'tpope/vim-abolish'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-fugitive'
@@ -531,15 +530,11 @@ noremap <C-]> g<C-]>
 noremap <C-g> g<C-g>
 
 " quickfix
- noremap <leader>cc :cclose<bar>lclose<cr>
-nnoremap ]q         :cnext<CR>zz
-nnoremap [q         :cprev<CR>zz
-nnoremap ]l         :lnext<CR>zz
-nnoremap [l         :lprev<CR>zz
-
-" buffers
-nnoremap ]b :bnext<CR>
-nnoremap [b :bprev<CR>
+ noremap <leader>cc :cclose<bar>lclose<CR>
+augroup vimrcQfClose
+    autocmd!
+    autocmd FileType qf if mapcheck('<esc>', 'n') ==# '' | nnoremap <buffer><silent> <esc> :cclose<bar>lclose<CR> | endif
+augroup END
 
 " circular window navigation
 nnoremap <tab>   <C-w>w
@@ -836,7 +831,7 @@ if has('eval')
     endif
 
     " register extensions
-    let g:ctrlp_extensions = ['undo', 'smarttabs', 'buffertag']
+    let g:ctrlp_extensions = ['dir', 'undo', 'smarttabs', 'buffertag']
 
     " tags options
     let g:ctrlp_buftag_ctags_bin = g:ctags_location
@@ -852,15 +847,11 @@ if has('eval')
     " <leader>lf -> Search files
     noremap <silent> <leader>lf         :CtrlP<CR>
     " <leader>lr -> Search files local
-    noremap <silent> <leader>lr         :CtrlP .<CR>
-    " <leader>ll -> Search with Locate
-    noremap <silent> <leader>ll         :CtrlPLocate<CR>
+    noremap <silent> <leader>lr         :CtrlPCurFile<CR>
     " <Leader>lt -> Search for Tags
     noremap <silent> <leader>lt         :CtrlPBufTag<CR>
-    " <leader>ldh -> Search and change working dir
-    noremap <silent> <leader>ldh        :CtrlPChdir<CR>
-    " <leader>ldl -> Search and change local working dir
-    noremap <silent> <leader>ldl        :CtrlPLchdir<CR>
+    " <leader>ld -> Search and change working dir
+    noremap <silent> <leader>ld         :CtrlPDir<CR>
     " <leader>lhy -> Search Yank history
     noremap <silent> <leader>lhy        :CtrlPYankring<CR>
     " <leader>lhs -> Search search history
@@ -880,6 +871,20 @@ if has('eval')
     " <leader>lc -> Search Colorscheme
     noremap <silent> <leader>lc         :CtrlPColorscheme<CR>
 
+    " }}}
+
+
+    " grepper {{{
+    " binding
+    nnoremap <leader>gg :Grepper -tool git<cr>
+    nnoremap <leader>ga :Grepper -tool ag<cr>
+
+    nmap gs <plug>(GrepperOperator)
+    xmap gs <plug>(GrepperOperator)
+    " set options
+    let g:grepper               = {}
+    let g:grepper.tools         = [ 'git', 'rg', 'ag', 'findstr', 'ack', 'grep', 'pt', 'sift' ]
+    let g:grepper.simple_prompt = 1
     " }}}
 
 
@@ -1072,8 +1077,22 @@ if has('eval')
     if has('multi_byte')
         let g:startify_fortune_use_unicode = 1
     endif
+    let g:startify_files_number        = 8
+    let g:startify_session_autoload    = 0
+    let g:startify_session_persistence = 0
     " Bookmarks
-    let g:startify_bookmarks = [ { 'v' : '~/vimfiles/vimrc' } ]
+    let g:startify_skiplist = [
+                \ 'COMMIT_EDITMSG',
+                \ escape(fnamemodify($HOME, ':p'), '\') . 'vimfiles\\plugged\\.*\\doc',
+                \ escape(fnamemodify($VIMRUNTIME, ':p'), '\') . 'doc',
+                \ escape(fnamemodify($MYVIMRC, ':p'), '\'),
+                \ ]
+    let g:startify_bookmarks = [
+                \ { 'v' : '~/vimfiles/vimrc' },
+                \ ]
+    let g:startify_transformations = [
+                \ ['.*vimrc$', 'vimrc'],
+                \ ]
     " }}}
 
 
