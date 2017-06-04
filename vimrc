@@ -200,7 +200,7 @@ set matchpairs+=<:>     " Add <> to highlighted matches.
 set showfulltag         " Show full tags when doing search completion.
 set switchbuf=useopen,usetab
                         " Allow changing windows/tabs for quickfix/:sb/etc
-set scrolloff=3         " Try to show at least three lines.
+set scrolloff=5         " Try to show at least three lines.
 set sidescrolloff=2     " and two columns of context when scrolling.
 set history=1000        " Big history.
 set autoindent          " Autoindent is good.
@@ -215,15 +215,22 @@ set timeout timeoutlen=2000 ttimeoutlen=100
                         " Don't wait 1s when pressing <esc>.
 set updatetime=10000    " Idle time for swapfilewrite and CursorHold trigger
 set report=0            " : commands always print changed line count.
-set shortmess+=a        " Use [+]/[RO]/[w] for modified/readonly/written.
+set shortmess+=aIT      " Use [+]/[RO]/[w] for modified/readonly/written.
 set display=lastline,uhex
                         " Show as much as possible of last line,
                         " Show unprintable characters as <xx>.
+set formatoptions+=1    " don't break a line after a 1-letter word,
+                        " break before if possible
+if has('patch-7.3.541')
+  set formatoptions+=j  " remove comment leader when joining if sensible
+endif
+set nojoinspaces        " insert one space after a ./?/! with a join command
+silent! set cryptmethod=blowfish2
 
-if !isdirectory(expand('~/vimfiles/swap'))
-    call mkdir(expand('~/vimfiles/swap'), 'p')
+if !isdirectory(expand('~/vimfiles/.cache/swap'))
+    call mkdir(expand('~/vimfiles/.cache/swap'), 'p')
 endif                   " Warn if swapdir does not exist
-set directory^=~/vimfiles/swap//
+set directory^=~/vimfiles/.cache/swap//
                         " Build swap filename from path
 
 try
@@ -234,6 +241,13 @@ endtry
 
 set fileformats=unix,dos,mac
                         " default file type.
+
+augroup vimrcPasteToggle
+    autocmd!
+    autocmd VimEnter * set pastetoggle=<F1>     " F1 toggles paste mode
+                                                " set here so it overrides
+                                                " the help binding
+augroup END
 
 " }}}
 
@@ -279,6 +293,10 @@ if has('cmdline_info')
     set showcmd         " Show us the command we're typing.
 endif
 
+if has('diff')
+    set diffopt=filler,vertical
+endif
+
 if has('gui_running')
     " set guifont=Consolas:h11
     " set guifont=Fantasque_Sans_Mono:h12
@@ -297,6 +315,8 @@ elseif !empty($CONEMUBUILD)
     set term=xterm
     set t_Co=256
     if has('termguicolors')
+        let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+        let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
         set termguicolors
     endif
     set mouse=a
@@ -328,7 +348,10 @@ if has('folding')
 endif
 
 if has('linebreak')
-   set numberwidth=2   " Set minimum number column width to 1 digit + space.
+   set numberwidth=2    " Set minimum number column width to 1 digit + space.
+   set breakindent      " every wrapped line will continue visually indented.
+   set breakindentopt=sbr
+                        " show 'showbreak' value before the indent
 endif
 
 if has('printing')
@@ -358,7 +381,7 @@ if has('extra_search')
 endif
 
 if has('insert_expand')
-    set completeopt=menu,preview,longest
+    set completeopt=menuone,preview,longest
 endif
 
 if has('wildmenu')
@@ -372,7 +395,10 @@ if has('viminfo')
 endif
 
 if has('persistent_undo')
-    set undodir=~/vimfiles/undo
+    if !isdirectory(expand('~/vimfiles/.cache/undo'))
+        call mkdir(expand('~/vimfiles/.cache/undo'), 'p')
+    endif
+    set undodir=~/vimfiles/.cache/undo
     set undofile
     augroup vimrcUndoFile
         autocmd!
@@ -388,7 +414,10 @@ if has('conceal')
 endif
 
 if has('mksession')
-    set viewdir=~/vimfiles/view
+    if !isdirectory(expand('~/vimfiles/.cache/view'))
+        call mkdir(expand('~/vimfiles/.cache/view'), 'p')
+    endif
+    set viewdir=~/vimfiles/.cache/view
     set viewoptions=cursor,folds,slash,unix
     let g:skipview_files = []
     function! MakeViewCheck()
@@ -491,8 +520,8 @@ noremap <c-]> g<c-]>
 noremap <c-g> g<c-g>
 
 " F1 -> Toggle paste
- noremap <F1>      :set paste!<CR>:set paste?<CR>
-inoremap <F1> <C-o>:set paste!<CR><C-o>:set paste?<CR>
+ " noremap <F1>      :set paste!<CR>:set paste?<CR>
+" inoremap <F1> <C-o>:set paste!<CR><C-o>:set paste?<CR>
 
 " F2 -> Toggle list
  noremap <F2>      :set list!<CR>:set list?<CR>
