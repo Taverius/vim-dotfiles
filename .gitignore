@@ -1,11 +1,4 @@
-/bundle
-/cache
-/share
-/swap
-/undo
-/view
-.*
-viminfo
-/autoload/
+/.cache/
+autoload/plug.vim
 /mine/
 /plugged/
