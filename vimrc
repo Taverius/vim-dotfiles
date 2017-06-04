@@ -27,14 +27,6 @@ if has('vim_starting')
     endif
 endif
 
-" Backslash to forwardslash
-" set shellslash
-
-" In Windows, can't find exe, when $PATH isn't contained $VIM.
-if $PATH !~? '^' . escape($VIMRUNTIME, '\\') . ';'
-    let $PATH = $VIMRUNTIME.';'.$PATH
-endif
-
 " Set this here so plugin autoload can use it
 let mapleader = ","     " With a map leader it's possible to do extra key combinations.
 let g:mapleader = ","   " like <leader>w saves the current file.
@@ -55,6 +47,9 @@ endfunction
 
 " Headlights
 Plug 'mbadran/headlights', Cond(has('python'))
+
+" Startify
+Plug 'mhinz/vim-startify'
 
 " Libraries
 Plug 'tpope/vim-repeat'
@@ -207,7 +202,7 @@ set switchbuf=useopen,usetab
                         " Allow changing windows/tabs for quickfix/:sb/etc
 set scrolloff=3         " Try to show at least three lines.
 set sidescrolloff=2     " and two columns of context when scrolling.
-set history=500         " Big history.
+set history=1000        " Big history.
 set autoindent          " Autoindent is good.
 set textwidth=0         " Don't wrap pasted text
 set nostartofline       " Keep same position in line for some commands ...
@@ -296,6 +291,21 @@ if has('gui_running')
                             " Clipboard is the unnamed register.
 
     set guioptions-=T       " Remove the toolbar
+    set guioptions-=e       " Use the CUI tabline always
+elseif !empty($CONEMUBUILD)
+    set termencoding=utf8
+    set term=xterm
+    set t_Co=256
+    if has('termguicolors')
+        set termguicolors
+    endif
+    set mouse=a
+    let &t_AB="\e[48;5;%dm"
+    let &t_AF="\e[38;5;%dm"
+    inoremap <Esc>[62~ <C-X><C-E>
+    inoremap <Esc>[63~ <C-X><C-Y>
+     noremap <Esc>[62~ <C-E>
+     noremap <Esc>[63~ <C-Y>
 endif
 
 if has('folding')
@@ -357,7 +367,7 @@ if has('wildmenu')
 endif
 
 if has('viminfo')
-    set viminfo=!,%,'1000,/1000,:1000,f1,h,s100,n~/vimfiles/.cache/viminfo
+    set viminfo='1000,f1,h,s100,n~/vimfiles/.cache/viminfo
                         " Enable a nice big viminfo file.
 endif
 
@@ -752,9 +762,6 @@ if has('eval')
     " vim-colorscheme-switcher {{{
     " No builtin colorschemes thanks
     let g:colorscheme_switcher_exclude_builtins=1
-    if !has('gui_running')
-        let g:colorscheme_switcher_command=ColorScheme
-    endif
     " }}}
 
 
@@ -847,14 +854,17 @@ if has('eval')
     " }}}
 
 
-    " undotree
+    " undotree {{{
+    " set layout
     let g:undotree_WindowLayout = 2
     " <leader>lu -> Undo
     noremap <silent> U      :UndotreeToggle<CR>
+    " }}}
 
 
-    " Echodoc
+    " Echodoc {{{
     let g:echodoc_enable_at_startup = 1
+    " }}}
 
 
     " AsyncComplete {{{
@@ -996,18 +1006,21 @@ if has('eval')
     " Sneak {{{
     " Enable Label mode
     let g:sneak#label = 1
+    " use s and S to go to next/prev match
+    let g:sneak#s_next = 1
+    " Use Vim case-sesitivity settings
+    let g:sneak#use_ic_scs = 1
+    " Prompt character
+    if (&termencoding ==? "utf-8") || has('gui_running')
+        let g:sneak#prompt = '»'
+    else
+        let g:sneak#prompt = '>'
+    endif
     " Repeats
-    nmap <CR> <Plug>SneakNext
-    xmap <CR> <Plug>SneakNext
-    nmap <bs> <Plug>SneakPrevious
-    xmap <bs> <Plug>SneakPrevious
-    " 2-character Sneak (default)
-    nmap z <Plug>Sneak_s
-    nmap Z <Plug>Sneak_S
-    xmap z <Plug>Sneak_s
-    xmap Z <Plug>Sneak_S
-    omap z <Plug>Sneak_s
-    omap Z <Plug>Sneak_S
+    nmap <CR> <Plug>Sneak_;
+    xmap <CR> <Plug>Sneak_;
+    nmap <bs> <Plug>Sneak_,
+    xmap <bs> <Plug>Sneak_,
     "replace 'f' with inclusive 1-char Sneak
     map f <Plug>Sneak_f
     map F <Plug>Sneak_F
@@ -1019,9 +1032,19 @@ if has('eval')
         autocmd!
         autocmd ColorScheme * highlight clear Sneak
         autocmd ColorScheme * highlight clear SneakScope
-        autocmd ColorScheme * highlight! link Sneak ErrorMsg
+        autocmd ColorScheme * highlight! link Sneak IncSearc
         autocmd ColorScheme * highlight! link SneakScope Comment
     augroup END
+    " }}}
+
+
+    " Startify {{{
+    " If we have UTF8 capability, use it
+    if has('multi_byte')
+        let g:startify_fortune_use_unicode = 1
+    endif
+    " Bookmarks
+    let g:startify_bookmarks = [ { 'v' : '~/vimfiles/vimrc' } ]
     " }}}
 
 
@@ -1066,6 +1089,10 @@ if has('eval')
     " Airline {{{
     " Enable fancy font stuff
     let g:airline_powerline_fonts = 1
+    " Tabline
+    let g:airline#extensions#tabline#enabled = 1
+    nmap <leader>- <Plug>AirlineSelectPrevTab
+    nmap <leader>= <Plug>AirlineSelectNextTab
     " Disable some plugin integration
     let g:airline#extensions#tagbar#enabled = 0
     let g:airline#extensions#wordcount#enabled = 0
