@@ -58,6 +58,8 @@ Plug 'xolox/vim-misc'
 Plug 'xolox/vim-shell'
 Plug 'Shougo/context_filetype.vim'
 Plug 'Shougo/echodoc.vim'
+Plug 'Shougo/neco-vim'
+Plug 'Shougo/neco-syntax'
 
 " CtrlP
 Plug 'ctrlpvim/ctrlp.vim'
@@ -82,7 +84,6 @@ Plug 'smitajit/bufutils.vim'
 " Completion
 Plug 'Shougo/neocomplete.vim', Cond(has('lua'))
 Plug 'prabirshrestha/asyncomplete.vim', Cond(!has('lua'))
-Plug 'Shougo/neco-syntax', Cond(!has('lua'))
 Plug 'prabirshrestha/asyncomplete.vim', Cond(!has('lua'))
 Plug 'prabirshrestha/asyncomplete-buffer.vim', Cond(!has('lua'))
 Plug 'prabirshrestha/asyncomplete-necovim.vim', Cond(!has('lua'))
@@ -130,7 +131,6 @@ Plug 'dahu/VimLint'
 " Filetypes
 Plug 'sheerun/vim-polyglot'
 Plug 'chrisbra/csv.vim'
-Plug 'vim-scripts/genindent.vim'
 
 " Colorscheme Utilities
 Plug 'godlygeek/csapprox', Cond(!has('gui_running'))
@@ -454,6 +454,19 @@ augroup vimrcSaveOnFocusLost
     autocmd FocusLost * silent! :wall
 augroup END
 
+let g:ctags_location = expand('C:/Dev/Ctags/ctags')
+
+if executable('rg')
+    " Ripgrep
+    set grepprg=rg\ --vimgrep\ --no-heading\ --smart-case\ -u
+    set grepformat=%f:%l:%c:%m,%f:%l:%m
+elseif executable('ag')
+    " The Silver Searcher
+    set grepprg=ag\ --vimgrep\ -U
+    set grepformat=%f:%l:%c:%m,%f:%l:%m
+endif
+
+
 " }}}
 
 " ====================================
@@ -469,8 +482,8 @@ nnoremap <silent> ;; ;
 vnoremap <silent> ;; ;
 nnoremap ; :
 vnoremap ; :
-nnoremap <A-;> ;
-vnoremap <A-;> ;
+nnoremap <M-;> ;
+vnoremap <M-;> ;
 nnoremap q; q:
 vnoremap q; q:
                         " Pure genius.
@@ -480,13 +493,11 @@ vnoremap q; q:
  noremap <C-s>      :w<CR>
 inoremap <C-s> <C-o>:w<CR>
 
-" :W -> :w
-command! -bang -range=% -complete=file -nargs=* W <line1>,<line2>write<bang> <args>
-" :Q -> :q
-command! -bang Q quit<bang>
-
-noremap <leader>e :e! $MYVIMRC<CR>
+noremap <leader>v :e! $MYVIMRC<CR>
                         " Fast editing of the .vimrc.
+
+" qq to record, Q to replay
+nnoremap Q @q
 
 noremap <S-cr> <Esc>
                         " Shift-Enter = ESC.
@@ -499,35 +510,52 @@ map <leader>t2 :setlocal shiftwidth=2<CR>
 map <leader>t4 :setlocal shiftwidth=4<CR>
 map <leader>t8 :setlocal shiftwidth=8<CR>
 
-" :cope.
-noremap <leader>cc :botright cope<CR>
-noremap <leader>n :cn<CR>
-noremap <leader>p :cp<CR>
+" Pressing an 'enter visual mode' key while in visual mode changes mode.
+vmap <C-V> <ESC>`<<C-v>`>
+vmap V     <ESC>`<V`>
+vmap v     <ESC>`<v`>
 
 " Remove the Windows ^M - when the encodings gets messed up.
-noremap <leader>m mmHmt:%s/<C-V><CR>//ge<CR>'tzt'm
+noremap <leader>M mmHmt:%s/<C-V><CR>//ge<CR>'tzt'm
 
 " This mapping allows to stay in visual mode when indenting with < and >
 vnoremap > >gv
 vnoremap < <gv
 
 " These mappings are useful in long wrapped lines when pressing j or k
-nnoremap <M-j> gj
-nnoremap <M-k> gk
+nnoremap <C-down> gj
+nnoremap <C-up> gk
 
+" tag movement
+noremap <C-]> g<C-]>
+noremap <C-g> g<C-g>
 
-noremap <c-]> g<c-]>
-noremap <c-g> g<c-g>
+" quickfix
+ noremap <leader>cc :cclose<bar>lclose<cr>
+nnoremap ]q         :cnext<CR>zz
+nnoremap [q         :cprev<CR>zz
+nnoremap ]l         :lnext<CR>zz
+nnoremap [l         :lprev<CR>zz
 
-" F1 -> Toggle paste
- " noremap <F1>      :set paste!<CR>:set paste?<CR>
-" inoremap <F1> <C-o>:set paste!<CR><C-o>:set paste?<CR>
+" buffers
+nnoremap ]b :bnext<CR>
+nnoremap [b :bprev<CR>
+
+" circular window navigation
+nnoremap <tab>   <C-w>w
+nnoremap <S-tab> <C-w>W
+
+" tab configuration
+nnoremap <leader>tn :tabnew %<CR>
+nnoremap <leader>te :tabedit
+nnoremap <leader>tc :tabclose<CR>
+nnoremap <leader>tm :tabmove
 
 " F2 -> Toggle list
  noremap <F2>      :set list!<CR>:set list?<CR>
 inoremap <F2> <C-o>:set list!<CR><C-O>:set list?<CR>
 
-if has('spell')
+if has('syntax')
     set nospell
 
     " Rotate through languages of spelling checker.
@@ -535,7 +563,7 @@ if has('spell')
     if !exists('g:MY_LANG_IDX') || ( g:MY_LANG_IDX + 1 < len(g:my_lang_codes) )
         let g:MY_LANG_IDX = 0
     endif
-    function! <SID>MySpellLang()
+    function! MySpellLang()
         exec "setlocal" "spelllang=".get(g:my_lang_codes, g:MY_LANG_IDX)
         let g:MY_LANG_IDX = ( g:MY_LANG_IDX + 1 < len(g:my_lang_codes) ) ? g:MY_LANG_IDX + 1 : 0
     endfunction
@@ -549,8 +577,8 @@ if has('spell')
 endif
 
 " Function used to display syntax group.
-function! <SID>SyntaxItem()
-    return synIDattr(synID(line("."),col("."),1),"name")
+function! SyntaxItem()
+    return join(map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")'), '/')
 endfunction
 
 " <leader>syn -> show syntax group under cursor
@@ -561,27 +589,6 @@ function! CmdLine(str)
     emenu Foo.Bar
     unmenu Foo
 endfunction
-
-" Pressing an 'enter visual mode' key while in visual mode changes mode.
-vmap <C-V> <ESC>`<<C-v>`>
-vmap V     <ESC>`<V`>
-vmap v     <ESC>`<v`>
-
-" Smart way to move btw. windows.
-map <C-j> <C-W>j
-map <C-k> <C-W>k
-map <C-h> <C-W>h
-map <C-l> <C-W>l
-
-" Use the arrows to something usefull.
-map <silent> <C-right> :tabnext<CR>
-map <silent> <C-left>  :tabprevious<CR>
-
-" Tab configuration.
-map <leader>tn :tabnew %<CR>
-map <leader>te :tabedit
-map <leader>tc :tabclose<CR>
-map <leader>tm :tabmove
 
 " }}}
 
@@ -765,19 +772,6 @@ if has('eval')
 
     packadd! matchit
 
-    let g:ctags_location = expand('C:/Dev/Ctags/ctags')
-
-
-    if executable('rg')
-        " Ripgrep
-        set grepprg=rg\ --vimgrep\ --no-heading\ --smart-case\ -u
-        set grepformat=%f:%l:%c:%m,%f:%l:%m
-    elseif executable('ag')
-        " The Silver Searcher
-        set grepprg=ag\ --vimgrep\ -U
-        set grepformat=%f:%l:%c:%m,%f:%l:%m
-    endif
-
 
     " bufutils/wipeout {{{
     " Some handy mappings
@@ -785,6 +779,12 @@ if has('eval')
     nnoremap <leader>ba :BCloseAll<CR>
     nnoremap <leader>bc :BCloseThis<CR>
     nnoremap <leader>bw :Wipeout<CR>
+    " }}}
+
+
+    " characterize {{{
+    " ga is used easy-align
+    nmap <leader>utf    <Plug>(characterize)
     " }}}
 
 
@@ -1079,32 +1079,39 @@ if has('eval')
 
     " Easy-Align {{{
     " Start interactive EasyAlign in visual mode (e.g. vip<Enter>)
-    vmap <Enter> <Plug>(EasyAlign)
+    xmap ga <Plug>(EasyAlign)
     " Start interactive EasyAlign for a motion/text object (e.g. <Leader>aip)
-    nmap <Leader>a <Plug>(EasyAlign)
+    nmap ga <Plug>(EasyAlign)
     " custom patterns
     let g:easy_align_delimiters = {
                 \ '>': { 'pattern': '>>\|=>\|>' },
+                \ '\': { 'pattern': '\\' },
                 \ '/': {
-                \     'pattern':         '//\+\|/\*\|\*/',
+                \     'pattern': '//\+\|/\*\|\*/',
                 \     'delimiter_align': 'l',
-                \     'ignore_groups':   ['!Comment'] },
+                \     'ignore_groups': ['!Comment']
+                \   },
                 \ ']': {
-                \     'pattern':       '[[\]]',
+                \     'pattern':       '\]\zs',
                 \     'left_margin':   0,
-                \     'right_margin':  0,
+                \     'right_margin':  1,
                 \     'stick_to_left': 0
                 \   },
                 \ ')': {
-                \     'pattern':       '[()]',
+                \     'pattern':       ')\zs',
                 \     'left_margin':   0,
-                \     'right_margin':  0,
+                \     'right_margin':  1,
                 \     'stick_to_left': 0
                 \   },
-                \ 'd': {
-                \     'pattern':      ' \(\S\+\s*[;=]\)\@=',
-                \     'left_margin':  0,
+                \ 'f': {
+                \     'pattern': ' \(\S\+(\)\@=',
+                \     'left_margin': 0,
                 \     'right_margin': 0
+                \   },
+                \ 'd': {
+                \     'pattern': ' \ze\S\+\s*[;=]',
+                \     'left_margin': 0,
+                \ 'right_margin': 0
                 \   },
                 \ 'n' : {
                 \     'pattern' : '\(\ =\|,\)',
@@ -1120,8 +1127,8 @@ if has('eval')
     let g:airline_powerline_fonts = 1
     " Tabline
     let g:airline#extensions#tabline#enabled = 1
-    nmap <leader>- <Plug>AirlineSelectPrevTab
-    nmap <leader>= <Plug>AirlineSelectNextTab
+    nmap [t <Plug>AirlineSelectPrevTab
+    nmap ]t <Plug>AirlineSelectNextTab
     " Disable some plugin integration
     let g:airline#extensions#tagbar#enabled = 0
     let g:airline#extensions#wordcount#enabled = 0
