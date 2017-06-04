@@ -96,6 +96,17 @@ Plug 'majutsushi/tagbar'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
+" Easymotion
+Plug 'easymotion/vim-easymotion'
+Plug 'haya14busa/incsearch.vim'
+Plug 'haya14busa/incsearch-fuzzy.vim'
+Plug 'haya14busa/incsearch-easymotion.vim'
+Plug 'kana/vim-operator-user'
+Plug 'haya14busa/vim-operator-flashy'
+Plug 'haya14busa/vim-asterisk'
+Plug 'haya14busa/vim-easyoperator-line'
+Plug 'haya14busa/vim-easyoperator-phrase'
+
 " Plugins
 Plug 'AndrewRadev/splitjoin.vim'
 Plug 'ciaranm/securemodelines'
@@ -105,8 +116,8 @@ Plug 'junegunn/vim-easy-align'
 Plug 'junegunn/vim-fnr'
 Plug 'junegunn/vim-peekaboo'
 Plug 'junegunn/vim-pseudocl'
-Plug 'junegunn/vim-slash'
-Plug 'justinmk/vim-sneak'
+" Plug 'junegunn/vim-slash'
+" Plug 'justinmk/vim-sneak'
 Plug 'MattesGroeger/vim-bookmarks'
 Plug 'matze/vim-move'
 Plug 'mhinz/vim-grepper'
@@ -241,12 +252,7 @@ endtry
 set fileformats=unix,dos,mac
                         " default file type.
 
-augroup vimrcPasteToggle
-    autocmd!
-    autocmd VimEnter * set pastetoggle=<F1>     " F1 toggles paste mode
-                                                " set here so it overrides
-                                                " the help binding
-augroup END
+set pastetoggle=<F1>    " F1 toggles paste mode
 
 " }}}
 
@@ -1032,44 +1038,45 @@ if has('eval')
     " Easyclip masks m (create mark), remap it to gm
     nnoremap gm m
     " Control-v pastes in insert and command mode
-    imap <c-v> <Plug>EasyClipInsertModePaste
-    cmap <c-v> <Plug>EasyClipCommandModePaste
+     map <F1>  <Plug>EasyClipToggleFormattedPaste
+    imap <C-v> <Plug>EasyClipInsertModePaste
+    cmap <C-v> <Plug>EasyClipCommandModePaste
     "}}}
 
 
-    " Sneak {{{
-    " Enable Label mode
-    let g:sneak#label = 1
-    " use s and S to go to next/prev match
-    let g:sneak#s_next = 1
-    " Use Vim case-sesitivity settings
-    let g:sneak#use_ic_scs = 1
-    " Prompt character
-    if (&termencoding ==? "utf-8") || has('gui_running')
-        let g:sneak#prompt = '»'
-    else
-        let g:sneak#prompt = '>'
-    endif
-    " Repeats
-    nmap <CR> <Plug>Sneak_;
-    xmap <CR> <Plug>Sneak_;
-    nmap <bs> <Plug>Sneak_,
-    xmap <bs> <Plug>Sneak_,
-    "replace 'f' with inclusive 1-char Sneak
-    map f <Plug>Sneak_f
-    map F <Plug>Sneak_F
-    "replace 't' with exclusive 1-char Sneak
-    map t <Plug>Sneak_t
-    map T <Plug>Sneak_T
-    " Highlights
-    augroup vimrcSneakHighlight
-        autocmd!
-        autocmd ColorScheme * highlight clear Sneak
-        autocmd ColorScheme * highlight clear SneakScope
-        autocmd ColorScheme * highlight! link Sneak IncSearc
-        autocmd ColorScheme * highlight! link SneakScope Comment
-    augroup END
-    " }}}
+    " " Sneak {{{
+    " " Enable Label mode
+    " let g:sneak#label = 1
+    " " use s and S to go to next/prev match
+    " let g:sneak#s_next = 1
+    " " Use Vim case-sesitivity settings
+    " let g:sneak#use_ic_scs = 1
+    " " Prompt character
+    " if (&termencoding ==? "utf-8") || has('gui_running')
+    "     let g:sneak#prompt = '»'
+    " else
+    "     let g:sneak#prompt = '>'
+    " endif
+    " " Repeats
+    " nmap <CR> <Plug>Sneak_;
+    " xmap <CR> <Plug>Sneak_;
+    " nmap <bs> <Plug>Sneak_,
+    " xmap <bs> <Plug>Sneak_,
+    " "replace 'f' with inclusive 1-char Sneak
+    " map f <Plug>Sneak_f
+    " map F <Plug>Sneak_F
+    " "replace 't' with exclusive 1-char Sneak
+    " map t <Plug>Sneak_t
+    " map T <Plug>Sneak_T
+    " " Highlights
+    " augroup vimrcSneakHighlight
+    "     autocmd!
+    "     autocmd ColorScheme * highlight clear Sneak
+    "     autocmd ColorScheme * highlight clear SneakScope
+    "     autocmd ColorScheme * highlight! link Sneak IncSearc
+    "     autocmd ColorScheme * highlight! link SneakScope Comment
+    " augroup END
+    " " }}}
 
 
     " Startify {{{
