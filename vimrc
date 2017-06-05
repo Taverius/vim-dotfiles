@@ -101,11 +101,7 @@ Plug 'easymotion/vim-easymotion'
 Plug 'haya14busa/incsearch.vim'
 Plug 'haya14busa/incsearch-fuzzy.vim'
 Plug 'haya14busa/incsearch-easymotion.vim'
-Plug 'kana/vim-operator-user'
-Plug 'haya14busa/vim-operator-flashy'
 Plug 'haya14busa/vim-asterisk'
-Plug 'haya14busa/vim-easyoperator-line'
-Plug 'haya14busa/vim-easyoperator-phrase'
 
 " Plugins
 Plug 'AndrewRadev/splitjoin.vim'
@@ -116,8 +112,6 @@ Plug 'junegunn/vim-easy-align'
 Plug 'junegunn/vim-fnr'
 Plug 'junegunn/vim-peekaboo'
 Plug 'junegunn/vim-pseudocl'
-" Plug 'junegunn/vim-slash'
-" Plug 'justinmk/vim-sneak'
 Plug 'MattesGroeger/vim-bookmarks'
 Plug 'matze/vim-move'
 Plug 'mhinz/vim-grepper'
@@ -769,398 +763,530 @@ endif " }}}
 " ====================================
 " {{{
 
-if has('eval')
 
-    packadd! matchit
-
-
-    " bufutils/wipeout {{{
-    " Some handy mappings
-    nnoremap <leader>bp :BClosePreviews<CR>
-    nnoremap <leader>ba :BCloseAll<CR>
-    nnoremap <leader>bc :BCloseThis<CR>
-    nnoremap <leader>bw :Wipeout<CR>
-    " }}}
-
-
-    " characterize {{{
-    " ga is used easy-align
-    nmap <leader>utf    <Plug>(characterize)
-    " }}}
-
-
-    " vim-colorscheme-switcher {{{
-    " No builtin colorschemes thanks
-    let g:colorscheme_switcher_exclude_builtins=1
-    " }}}
-
-
-    " vim-colorscheme-manager {{{
-    " Put the file in with the rest of the cache stuff
-    let g:colorscheme_manager_file=expand('~/vimfiles/.cache/colorscheme')
-    " }}}
-
-
-    " CtrlP {{{
-
-    " When a file is already open, jump to it
-    let g:ctrlp_switch_buffer = 'et'
-
-    " ignore source control hidden dirs
-    let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
-
-    " MRU case insensitive
-    let g:ctrlp_mruf_case_sensitive = 0
-
-    " Set delay to prevent extra search
-    let g:ctrlp_lazy_update = 350
-
-    if executable('rg')
-        " Use ag in CtrlP for listing files
-        let g:ctrlp_user_command = 'rg %s -l -u --color never --smart-case -g ""'
-
-        " ag is fast enough that CtrlP doesn't need to cache
-        let g:ctrlp_use_caching = 0
-        " Use Ripgrep
-    elseif executable('ag')
-        " Use The Silver Searcher
-        " Use ag in CtrlP for listing files
-        let g:ctrlp_user_command = 'ag %s -l -U --nocolor -g ""'
-
-        " ag is fast enough that CtrlP doesn't need to cache
-        let g:ctrlp_use_caching = 0
-    endif
-
-    " python matcher
-    if has('python')
-        let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
-    endif
-
-    " register extensions
-    let g:ctrlp_extensions = ['dir', 'undo', 'smarttabs', 'buffertag']
-
-    " tags options
-    let g:ctrlp_buftag_ctags_bin = g:ctags_location
-
-    " colorscheme options
-    let g:ctrlp_ext_color_command = 'SwitchToColorScheme'
-
-    " binds
-    " <leader>lg -> Search in current buffer
-    noremap <silent> <leader>lg         :CtrlPBufLine<CR>
-    " <leader>lb -> Search buffers
-    noremap <silent> <leader>lb         :CtrlPBuffer<CR>
-    " <leader>lf -> Search files
-    noremap <silent> <leader>lf         :CtrlP<CR>
-    " <leader>lr -> Search files local
-    noremap <silent> <leader>lr         :CtrlPCurFile<CR>
-    " <Leader>lt -> Search for Tags
-    noremap <silent> <leader>lt         :CtrlPBufTag<CR>
-    " <leader>ld -> Search and change working dir
-    noremap <silent> <leader>ld         :CtrlPDir<CR>
-    " <leader>lhy -> Search Yank history
-    noremap <silent> <leader>lhy        :CtrlPYankring<CR>
-    " <leader>lhs -> Search search history
-    noremap <silent> <leader>lhs        :CtrlPSearchHistory<CR>
-    " <leader>lhc -> Search command history
-    noremap <silent> <leader>lhc        :CtrlPCmdHistory<CR>
-    " <leader>lmr -> Search MRU
-    noremap <silent> <leader>lmr        :CtrlPMRU<CR>
-    " <leader>lmm -> Search CtrlP Modes
-    noremap <silent> <leader>lmm        :CtrlPMenu<CR>
-    " <leader>lmk -> Search Marks
-    noremap <silent> <leader>lmk        :CtrlPMark<CR>
-    " <leader>lmh -> Search Help
-    noremap <silent> <leader>lmh        :CtrlPHelp<CR>
-    " <leader>lmt -> Search for tabs
-    noremap <silent> <leader>lmt        :CtrlPSmartTabs<CR>
-    " <leader>lc -> Search Colorscheme
-    noremap <silent> <leader>lc         :CtrlPColorscheme<CR>
-
-    " }}}
-
-
-    " grepper {{{
-    " binding
-    nnoremap <leader>gg :Grepper -tool git<cr>
-    nnoremap <leader>ga :Grepper -tool ag<cr>
-
-    nmap gs <plug>(GrepperOperator)
-    xmap gs <plug>(GrepperOperator)
-    " set options
-    let g:grepper               = {}
-    let g:grepper.tools         = [ 'git', 'rg', 'ag', 'findstr', 'ack', 'grep', 'pt', 'sift' ]
-    let g:grepper.simple_prompt = 1
-    " }}}
-
-
-    " undotree {{{
-    " set layout
-    let g:undotree_WindowLayout = 2
-    " <leader>lu -> Undo
-    noremap <silent> U      :UndotreeToggle<CR>
-    " }}}
-
-
-    " Echodoc {{{
-    let g:echodoc_enable_at_startup = 1
-    " }}}
-
-
-    " AsyncComplete {{{
-    if !has('lua')
-        " Maps
-        inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-        inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-        inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<cr>"
-
-        " Sources
-        augroup vimrcAsyncCompleteSources
-            autocmd!
-            autocmd CompleteDone * if pumvisible() == 0 | pclose | endif
-            autocmd User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#buffer#get_source_options({
-                        \ 'name': 'buffer',
-                        \ 'whitelist': ['*'],
-                        \ 'blacklist': ['go'],
-                        \ 'completor': function('asyncomplete#sources#buffer#completor'),
-                        \ }))
-            autocmd User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#necosyntax#get_source_options({
-                        \ 'name': 'necosyntax',
-                        \ 'whitelist': ['*'],
-                        \ 'completor': function('asyncomplete#sources#necosyntax#completor'),
-                        \ }))
-            autocmd User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#necovim#get_source_options({
-                        \ 'name': 'necovim',
-                        \ 'whitelist': ['vim'],
-                        \ 'completor': function('asyncomplete#sources#necovim#completor'),
-                        \ }))
-        augroup END
-    endif
-    " }}}
-
-
-    " NeoComplete {{{
-    if has('lua')
-        let g:acp_enableAtStartup = 0
-        let g:neocomplete#enable_at_startup = 1
-        let g:neocomplete#enable_smart_case = 1
-        let g:neocomplete#enable_camel_case = 1
-
-        " Set path
-        let g:neocomplete#data_directory = expand('~/vimfiles/.cache/neocomplete')
-
-        " Define dictionary.
-        let g:neocomplete#sources#dictionary#dictionaries = {
-                    \ 'default' : '',
-                    \ 'vimshell' : $HOME.'/.vimshell_hist',
-                    \ }
-
-        " Enable omni completion.
-        if !exists('g:neocomplete#sources#omni#input_patterns')
-            let g:neocomplete#sources#omni#input_patterns = {}
-        endif
-
-        " Ctags
-        let g:neocomplete#ctags_command = g:ctags_location
-
-        " Key mappings
-        " <CR>: close popup and save indent.
-        inoremap <expr><CR>     neocomplete#close_popup() ."<CR>"
-        " <TAB>: completion.
-        inoremap <expr><TAB>    pumvisible() ? "\<C-n>" : "\<TAB>"
-        " <C-h>, <BS>: close popup and delete backword char.
-        inoremap <expr><C-h>    neocomplete#smart_close_popup()."\<C-h>"
-        inoremap <expr><BS>     neocomplete#smart_close_popup()."\<C-h>"
-        inoremap <expr><C-y>    neocomplete#close_popup()
-        inoremap <expr><C-e>    neocomplete#cancel_popup()
-        inoremap <expr><C-g>    neocomplete#undo_completion()
-        inoremap <expr><C-l>    neocomplete#complete_common_string()
-    endif
-    " }}}
-
-
-    " vim-bookmarks {{{
-    " F5 -> Toggle Bookmark
-    " F6 -> Next Bookmark
-    " F7 -> Previous Bookmark
-    let g:bookmark_no_default_key_mappings = 1
-    let g:bookmark_manage_per_buffer = 1
-    nmap <silent> <F5>      <Plug>BookmarkToggle
-    nmap <silent> <F6>      <Plug>BookmarkNext
-    nmap <silent> <F7>      <Plug>BookmarkPrev
-    " }}}
-
-
-    " Easytags {{{
-    let g:easytags_cmd = g:ctags_location
-    " async is still bork
-    " let g:easytags_async = 1
-    let g:easytags_ignored_filetypes = '^\(bat|vba|tex|viki\)$'
-    let g:easytags_by_filetype = expand('~/vimfiles/.cache/easytags')
-    let g:easytags_python_enabled = has('python')
-    " }}}
-
-
-    " TagBar {{{
-    " <leader>ly -> TagBar
-    noremap <silent> <leader>ly      :TagbarToggle<CR>
-    let g:tagbar_ctags_bin = g:ctags_location
-    let g:tagbar_left = 0
-    let g:tagbar_width = 40
-    let g:tagbar_usearrows = 1
-    " }}}
-
-
-    " vim-shell {{{
-    " Don't map, we're only using it as dependency
-    let g:shell_mappings_enabled = 0
-    " }}}
-
-
-    " TOhtml {{{
-    let g:html_number_lines = 1
-    let g:html_use_css = 1
-    let g:html_dynamic_folds = 1
-    let g:html_use_encoding = 'UTF-8'
-    " }}}
-
-
-    " Numbertoggle {{{
-    " Don't use the default binds
-    let g:UseNumberToggleTrigger = 0
-    " F3 -> Toggle relative number
-     map <silent> <F3>      <Plug>NumberToggleTrigger
-    imap <silent> <F3> <C-o><Plug>NumberToggleTrigger
-    " }}}
-
-
-    " Easyclip {{{
-    " Easyclip masks m (create mark), remap it to gm
-    nnoremap gm m
-    " Control-v pastes in insert and command mode
-     map <F1>  <Plug>EasyClipToggleFormattedPaste
-    imap <C-v> <Plug>EasyClipInsertModePaste
-    cmap <C-v> <Plug>EasyClipCommandModePaste
-    "}}}
-
-
-    " " Sneak {{{
-    " " Enable Label mode
-    " let g:sneak#label = 1
-    " " use s and S to go to next/prev match
-    " let g:sneak#s_next = 1
-    " " Use Vim case-sesitivity settings
-    " let g:sneak#use_ic_scs = 1
-    " " Prompt character
-    " if (&termencoding ==? "utf-8") || has('gui_running')
-    "     let g:sneak#prompt = '»'
-    " else
-    "     let g:sneak#prompt = '>'
-    " endif
-    " " Repeats
-    " nmap <CR> <Plug>Sneak_;
-    " xmap <CR> <Plug>Sneak_;
-    " nmap <bs> <Plug>Sneak_,
-    " xmap <bs> <Plug>Sneak_,
-    " "replace 'f' with inclusive 1-char Sneak
-    " map f <Plug>Sneak_f
-    " map F <Plug>Sneak_F
-    " "replace 't' with exclusive 1-char Sneak
-    " map t <Plug>Sneak_t
-    " map T <Plug>Sneak_T
-    " " Highlights
-    " augroup vimrcSneakHighlight
-    "     autocmd!
-    "     autocmd ColorScheme * highlight clear Sneak
-    "     autocmd ColorScheme * highlight clear SneakScope
-    "     autocmd ColorScheme * highlight! link Sneak IncSearc
-    "     autocmd ColorScheme * highlight! link SneakScope Comment
-    " augroup END
-    " " }}}
-
-
-    " Startify {{{
-    " If we have UTF8 capability, use it
-    if has('multi_byte')
-        let g:startify_fortune_use_unicode = 1
-    endif
-    let g:startify_files_number        = 8
-    let g:startify_session_autoload    = 0
-    let g:startify_session_persistence = 0
-    " Bookmarks
-    let g:startify_skiplist = [
-                \ 'COMMIT_EDITMSG',
-                \ escape(fnamemodify($HOME, ':p'), '\') . 'vimfiles\\plugged\\.*\\doc',
-                \ escape(fnamemodify($VIMRUNTIME, ':p'), '\') . 'doc',
-                \ escape(fnamemodify($MYVIMRC, ':p'), '\'),
-                \ ]
-    let g:startify_bookmarks = [
-                \ { 'v' : '~/vimfiles/vimrc' },
-                \ ]
-    let g:startify_transformations = [
-                \ ['.*vimrc$', 'vimrc'],
-                \ ]
-    " }}}
-
-
-    " Easy-Align {{{
-    " Start interactive EasyAlign in visual mode (e.g. vip<Enter>)
-    xmap ga <Plug>(EasyAlign)
-    " Start interactive EasyAlign for a motion/text object (e.g. <Leader>aip)
-    nmap ga <Plug>(EasyAlign)
-    " custom patterns
-    let g:easy_align_delimiters = {
-                \ '>': { 'pattern': '>>\|=>\|>' },
-                \ '\': { 'pattern': '\\' },
-                \ '/': {
-                \     'pattern': '//\+\|/\*\|\*/',
-                \     'delimiter_align': 'l',
-                \     'ignore_groups': ['!Comment']
-                \   },
-                \ ']': {
-                \     'pattern':       '\]\zs',
-                \     'left_margin':   0,
-                \     'right_margin':  1,
-                \     'stick_to_left': 0
-                \   },
-                \ ')': {
-                \     'pattern':       ')\zs',
-                \     'left_margin':   0,
-                \     'right_margin':  1,
-                \     'stick_to_left': 0
-                \   },
-                \ 'f': {
-                \     'pattern': ' \(\S\+(\)\@=',
-                \     'left_margin': 0,
-                \     'right_margin': 0
-                \   },
-                \ 'd': {
-                \     'pattern': ' \ze\S\+\s*[;=]',
-                \     'left_margin': 0,
-                \ 'right_margin': 0
-                \   },
-                \ 'n' : {
-                \     'pattern' : '\(\ =\|,\)',
-                \     'left_margin' : 0,
-                \     'mode_sequence' : 'lr*'
-                \   }
-                \ }
-    " }}}
-
-
-    " Airline {{{
-    " Enable fancy font stuff
-    let g:airline_powerline_fonts = 1
-    " Tabline
-    let g:airline#extensions#tabline#enabled = 1
-    nmap [t <Plug>AirlineSelectPrevTab
-    nmap ]t <Plug>AirlineSelectNextTab
-    " Disable some plugin integration
-    let g:airline#extensions#tagbar#enabled = 0
-    let g:airline#extensions#wordcount#enabled = 0
-    " }}}
-
+packadd! matchit
+
+" vim-plug {{{
+" change how the Plug windows are opened
+let g:plug_window = '-tabnew'
+let g:plug_pwindow = 'vertical rightbelow new'
+" }}}
+
+
+" vim-airline {{{
+" Enable fancy font stuff
+let g:airline_powerline_fonts = 1
+" Tabline
+let g:airline#extensions#tabline#enabled = 1
+nmap [t <Plug>AirlineSelectPrevTab
+nmap ]t <Plug>AirlineSelectNextTab
+" Disable some plugin integration
+let g:airline#extensions#tagbar#enabled = 0
+let g:airline#extensions#wordcount#enabled = 0
+" }}}
+
+
+" asynccomplete.vim {{{
+if !has('lua')
+    " Maps
+    inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+    inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+    inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<cr>"
+
+    " Sources
+    augroup vimrcAsyncCompleteSources
+        autocmd!
+        autocmd CompleteDone * if pumvisible() == 0 | pclose | endif
+        autocmd User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#buffer#get_source_options({
+                    \ 'name': 'buffer',
+                    \ 'whitelist': ['*'],
+                    \ 'blacklist': ['go'],
+                    \ 'completor': function('asyncomplete#sources#buffer#completor'),
+                    \ }))
+        autocmd User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#necosyntax#get_source_options({
+                    \ 'name': 'necosyntax',
+                    \ 'whitelist': ['*'],
+                    \ 'completor': function('asyncomplete#sources#necosyntax#completor'),
+                    \ }))
+        autocmd User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#necovim#get_source_options({
+                    \ 'name': 'necovim',
+                    \ 'whitelist': ['vim'],
+                    \ 'completor': function('asyncomplete#sources#necovim#completor'),
+                    \ }))
+        autocmd User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#tags#get_source_options({
+                    \ 'name': 'tags',
+                    \ 'whitelist': ['*'],
+                    \ 'completor': function('asyncomplete#sources#tags#completor'),
+                    \ }))
+    augroup END
 endif
+" }}}
+
+
+" vim-bookmarks {{{
+" F5 -> Toggle Bookmark
+" F6 -> Next Bookmark
+" F7 -> Previous Bookmark
+let g:bookmark_no_default_key_mappings = 1
+let g:bookmark_manage_per_buffer = 1
+nmap <silent> <F5>      <Plug>BookmarkToggle
+nmap <silent> <F6>      <Plug>BookmarkNext
+nmap <silent> <F7>      <Plug>BookmarkPrev
+" }}}
+
+
+" bufutils.vim/vim-wipeout {{{
+" Some handy mappings
+nnoremap <leader>bp :BClosePreviews<CR>
+nnoremap <leader>ba :BCloseAll<CR>
+nnoremap <leader>bc :BCloseThis<CR>
+nnoremap <leader>bw :Wipeout<CR>
+" }}}
+
+
+" vim-characterize {{{
+" ga is used easy-align
+nmap <leader>utf    <Plug>(characterize)
+" }}}
+
+
+" vim-colorscheme-switcher {{{
+" No builtin colorschemes thanks
+let g:colorscheme_switcher_exclude_builtins=1
+" }}}
+
+
+" vim-colorscheme-manager {{{
+" Put the file in with the rest of the cache stuff
+let g:colorscheme_manager_file=expand('~/vimfiles/.cache/colorscheme')
+" }}}
+
+
+" ctrlp.vim {{{
+
+" When a file is already open, jump to it
+let g:ctrlp_switch_buffer = 'et'
+
+" ignore source control hidden dirs
+let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
+
+" MRU case insensitive
+let g:ctrlp_mruf_case_sensitive = 0
+
+" Set delay to prevent extra search
+let g:ctrlp_lazy_update = 350
+
+if executable('rg')
+    " Use ag in CtrlP for listing files
+    let g:ctrlp_user_command = 'rg %s -l -u --color never --smart-case -g ""'
+
+    " ag is fast enough that CtrlP doesn't need to cache
+    let g:ctrlp_use_caching = 0
+    " Use Ripgrep
+elseif executable('ag')
+    " Use The Silver Searcher
+    " Use ag in CtrlP for listing files
+    let g:ctrlp_user_command = 'ag %s -l -U --nocolor -g ""'
+
+    " ag is fast enough that CtrlP doesn't need to cache
+    let g:ctrlp_use_caching = 0
+endif
+
+" python matcher
+if has('python')
+    let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
+endif
+
+" register extensions
+let g:ctrlp_extensions = ['dir', 'undo', 'smarttabs', 'buffertag']
+
+" tags options
+let g:ctrlp_buftag_ctags_bin = g:ctags_location
+
+" colorscheme options
+let g:ctrlp_ext_color_command = 'SwitchToColorScheme'
+
+" binds
+" <leader>lg -> Search in current buffer
+noremap <silent> <leader>lg         :CtrlPBufLine<CR>
+" <leader>lb -> Search buffers
+noremap <silent> <leader>lb         :CtrlPBuffer<CR>
+" <leader>lf -> Search files
+noremap <silent> <leader>lf         :CtrlP<CR>
+" <leader>lr -> Search files local
+noremap <silent> <leader>lr         :CtrlPCurFile<CR>
+" <Leader>lt -> Search for Tags
+noremap <silent> <leader>lt         :CtrlPBufTag<CR>
+" <leader>ld -> Search and change working dir
+noremap <silent> <leader>ld         :CtrlPDir<CR>
+" <leader>lhy -> Search Yank history
+noremap <silent> <leader>lhy        :CtrlPYankring<CR>
+" <leader>lhs -> Search search history
+noremap <silent> <leader>lhs        :CtrlPSearchHistory<CR>
+" <leader>lhc -> Search command history
+noremap <silent> <leader>lhc        :CtrlPCmdHistory<CR>
+" <leader>lmr -> Search MRU
+noremap <silent> <leader>lmr        :CtrlPMRU<CR>
+" <leader>lmm -> Search CtrlP Modes
+noremap <silent> <leader>lmm        :CtrlPMenu<CR>
+" <leader>lmk -> Search Marks
+noremap <silent> <leader>lmk        :CtrlPMark<CR>
+" <leader>lmh -> Search Help
+noremap <silent> <leader>lmh        :CtrlPHelp<CR>
+" <leader>lmt -> Search for tabs
+noremap <silent> <leader>lmt        :CtrlPSmartTabs<CR>
+" <leader>lc -> Search Colorscheme
+noremap <silent> <leader>lc         :CtrlPColorscheme<CR>
+
+" }}}
+
+
+" vim-easyclip {{{
+" Easyclip masks m (create mark), remap it to gm
+nnoremap gm m
+" Control-v pastes in insert and command mode
+map <F1>  <Plug>EasyClipToggleFormattedPaste
+imap <C-v> <Plug>EasyClipInsertModePaste
+cmap <C-v> <Plug>EasyClipCommandModePaste
+"}}}
+
+
+" vim-easymotion {{{
+" We'll set out own maps, thanks
+let g:EasyMotion_do_mapping = 0
+" Search with Smart Case as per Vim option
+let g:EasyMotion_smartcase = 1
+" Use uppercase target labels and type as a lower case
+" let g:EasyMotion_use_upper = 1
+
+" sneak-alikes
+" s{char}{char} to move to {char}{char}
+ map s <Plug>(easymotion-bd-f2)
+nmap s <Plug>(easymotion-overwin-f2)
+" f{char} to move to {char}
+ map f <Plug>(easymotion-bd-f)
+nmap f <Plug>(easymotion-overwin-f)
+" t{char} to move beyond {char}
+ map t <Plug>(easymotion-bd-t)
+" move between matches with n/N
+" NOTE: defined under incsearch.vim
+
+" Maps with leader
+" Move to line
+ map <Leader>el <Plug>(easymotion-bd-jk)
+nmap <Leader>el <Plug>(easymotion-overwin-line)
+" Move to begginning of word
+ map <Leader>ew <Plug>(easymotion-bd-w)
+nmap <Leader>ew <Plug>(easymotion-overwin-w)
+" Move to begginning of WORD
+ map <Leader>eW <Plug>(easymotion-bd-W)
+" Move to end of word
+ map <Leader>ee <Plug>(easymotion-bd-e)
+" Move to end of WORD
+ map <Leader>eE <Plug>(easymotion-bd-E)
+
+" Incremental EasyMotion
+" You can use other keymappings like <C-l> instead of <CR> if you want to
+" use these mappings as default search and somtimes want to move cursor with
+" EasyMotion.
+function! s:incsearch_easymotion(...) abort
+  return incsearch#util#deepextend(deepcopy({
+  \   'modules': [incsearch#config#easymotion#module({'overwin': 1})],
+  \   'keymap': {
+  \     "\<CR>": '<Over>(easymotion)'
+  \   },
+  \   'is_expr': 0
+  \ }), get(a:, 1, {}))
+endfunction
+
+noremap <silent><expr> /  incsearch#go(<SID>incsearch_easymotion())
+noremap <silent><expr> ?  incsearch#go(<SID>incsearch_easymotion({'command': '?'}))
+noremap <silent><expr> g/ incsearch#go(<SID>incsearch_easymotion({'is_stay': 1}))
+
+" Incremental EasyFuzzyMotion
+function! s:incsearch_easyfuzzy(...) abort
+    return extend(copy({
+                \   'converters': [
+                \       incsearch#config#fuzzy#converter(),
+                \       incsearch#config#fuzzyspell#converter()
+                \   ],
+                \   'modules': [incsearch#config#easymotion#module({'overwin': 1})],
+                \   'keymap': {"\<CR>": '<Over>(easymotion)'},
+                \   'is_expr': 0,
+                \   'is_stay': 1
+                \ }), get(a:, 1, {}))
+endfunction
+
+noremap <silent><expr> z/  incsearch#go(<SID>incsearch_easyfuzzy())
+noremap <silent><expr> z?  incsearch#go(<SID>incsearch_easyfuzzy({'command': '?'}))
+noremap <silent><expr> zg/ incsearch#go(<SID>incsearch_easyfuzzy({'is_stay': 1}))
+
+" Set highlighting
+augroup vimrcEasyMotionHighlight
+    autocmd!
+    autocmd ColorScheme * highlight clear EasyMotionTarget
+    autocmd ColorScheme * highlight clear EasyMotionShade
+    autocmd ColorScheme * highlight clear EasyMotionTarget2First
+    autocmd ColorScheme * highlight clear EasyMotionTarget2Second
+    autocmd ColorScheme * highlight clear EasyMotionMoveHL
+    autocmd ColorScheme * highlight clear EasyMotionIncSearch
+    autocmd ColorScheme * highlight! link EasyMotionTarget        ErrorMsg
+    autocmd ColorScheme * highlight! link EasyMotionShade         Comment
+    autocmd ColorScheme * highlight! link EasyMotionTarget2First  MatchParen
+    autocmd ColorScheme * highlight! link EasyMotionTarget2Second MatchParen
+    autocmd ColorScheme * highlight! link EasyMotionMoveHL        Search
+    autocmd ColorScheme * highlight! link EasyMotionIncSearch     IncSearch
+augroup END
+" }}}
+
+
+" vim-easytags {{{
+let g:easytags_cmd = g:ctags_location
+" async is still bork
+" let g:easytags_async = 1
+let g:easytags_ignored_filetypes = '^\(bat|vba|tex|viki\)$'
+let g:easytags_by_filetype = expand('~/vimfiles/.cache/easytags')
+let g:easytags_python_enabled = has('python')
+" }}}
+
+
+" vim-easy-align {{{
+" Start interactive EasyAlign in visual mode (e.g. vip<Enter>)
+xmap ga <Plug>(EasyAlign)
+" Start interactive EasyAlign for a motion/text object (e.g. <Leader>aip)
+nmap ga <Plug>(EasyAlign)
+" custom patterns
+let g:easy_align_delimiters = {
+            \ '>': { 'pattern': '>>\|=>\|>' },
+            \ '\': { 'pattern': '\\' },
+            \ '/': {
+            \     'pattern': '//\+\|/\*\|\*/',
+            \     'delimiter_align': 'l',
+            \     'ignore_groups': ['!Comment']
+            \   },
+            \ ']': {
+            \     'pattern':       '\]\zs',
+            \     'left_margin':   0,
+            \     'right_margin':  1,
+            \     'stick_to_left': 0
+            \   },
+            \ ')': {
+            \     'pattern':       ')\zs',
+            \     'left_margin':   0,
+            \     'right_margin':  1,
+            \     'stick_to_left': 0
+            \   },
+            \ 'f': {
+            \     'pattern': ' \(\S\+(\)\@=',
+            \     'left_margin': 0,
+            \     'right_margin': 0
+            \   },
+            \ 'd': {
+            \     'pattern': ' \ze\S\+\s*[;=]',
+            \     'left_margin': 0,
+            \ 'right_margin': 0
+            \   },
+            \ 'n' : {
+            \     'pattern' : '\(\ =\|,\)',
+            \     'left_margin' : 0,
+            \     'mode_sequence' : 'lr*'
+            \   }
+            \ }
+" }}}
+
+
+" echodoc.vim {{{
+let g:echodoc#enable_at_startup = 1
+" }}}
+
+
+" vim-grepper {{{
+" binding
+nnoremap <leader>gg :Grepper -tool git<cr>
+nnoremap <leader>ga :Grepper -tool ag<cr>
+
+nmap gs <plug>(GrepperOperator)
+xmap gs <plug>(GrepperOperator)
+" set options
+let g:grepper               = {}
+let g:grepper.tools         = [ 'git', 'rg', 'ag', 'findstr', 'ack', 'grep', 'pt', 'sift' ]
+let g:grepper.simple_prompt = 1
+" }}}
+
+
+" incsearch.vim {{{
+" Very Magic by default
+let g:incsearch#magic = '\v'
+" Mappings that wipe the highlight
+let g:incsearch#auto_nohlsearch = 1
+map n   <Plug>(incsearch-nohl)<Plug>(easymotion-next)
+map N   <Plug>(incsearch-nohl)<Plug>(easymotion-prev)
+
+map *   <Plug>(incsearch-nohl)<Plug>(asterisk-*)
+map g*  <Plug>(incsearch-nohl)<Plug>(asterisk-g*)
+map #   <Plug>(incsearch-nohl)<Plug>(asterisk-#)
+map g#  <Plug>(incsearch-nohl)<Plug>(asterisk-g#)
+
+map z*  <Plug>(incsearch-nohl0)<Plug>(asterisk-z*)
+map gz* <Plug>(incsearch-nohl0)<Plug>(asterisk-gz*)
+map z#  <Plug>(incsearch-nohl0)<Plug>(asterisk-z#)
+map gz# <Plug>(incsearch-nohl0)<Plug>(asterisk-gz#)
+
+" Set highlighting
+augroup vimrcIncSearchHighlight
+    autocmd!
+    autocmd ColorScheme * highlight clear IncSearchMatch
+    autocmd ColorScheme * highlight clear IncSearchMatchReverse
+    autocmd ColorScheme * highlight clear IncSearchOnCursor
+    autocmd ColorScheme * highlight clear IncSearchCursor
+    autocmd ColorScheme * highlight! link IncSearchMatch        Search
+    autocmd ColorScheme * highlight! link IncSearchMatchReverse IncSearch
+    autocmd ColorScheme * highlight! link IncSearchOnCursor     IncSearch
+    autocmd ColorScheme * highlight! link IncSearchCursor       Cursor
+augroup END
+" }}}
+
+
+" neocomplete.vim {{{
+if has('lua')
+    let g:acp_enableAtStartup = 0
+    let g:neocomplete#enable_at_startup = 1
+    let g:neocomplete#enable_smart_case = 1
+    let g:neocomplete#enable_camel_case = 1
+
+    " Set path
+    let g:neocomplete#data_directory = expand('~/vimfiles/.cache/neocomplete')
+
+    " Define dictionary.
+    let g:neocomplete#sources#dictionary#dictionaries = {
+                \ 'default' : '',
+                \ 'vimshell' : $HOME.'/.vimshell_hist',
+                \ }
+
+    " Enable omni completion.
+    if !exists('g:neocomplete#sources#omni#input_patterns')
+        let g:neocomplete#sources#omni#input_patterns = {}
+    endif
+
+    " Ctags
+    let g:neocomplete#ctags_command = g:ctags_location
+
+    " Key mappings
+    " <CR>: close popup and save indent.
+    inoremap <expr><CR>     neocomplete#close_popup() ."<CR>"
+    " <TAB>: completion.
+    inoremap <expr><TAB>    pumvisible() ? "\<C-n>" : "\<TAB>"
+    " <C-h>, <BS>: close popup and delete backword char.
+    inoremap <expr><C-h>    neocomplete#smart_close_popup()."\<C-h>"
+    inoremap <expr><BS>     neocomplete#smart_close_popup()."\<C-h>"
+    inoremap <expr><C-y>    neocomplete#close_popup()
+    inoremap <expr><C-e>    neocomplete#cancel_popup()
+    inoremap <expr><C-g>    neocomplete#undo_completion()
+    inoremap <expr><C-l>    neocomplete#complete_common_string()
+endif
+" }}}
+
+
+" vim-numbertoggle {{{
+" Don't use the default binds
+let g:UseNumberToggleTrigger = 0
+" F3 -> Toggle relative number
+map <silent> <F3>      <Plug>NumberToggleTrigger
+imap <silent> <F3> <C-o><Plug>NumberToggleTrigger
+" }}}
+
+
+" " vim-sneak {{{
+" " Enable Label mode
+" let g:sneak#label = 1
+" " use s and S to go to next/prev match
+" let g:sneak#s_next = 1
+" " Use Vim case-sensitivity settings
+" let g:sneak#use_ic_scs = 1
+" " Prompt character
+" if (&termencoding ==? "utf-8") || has('gui_running')
+"     let g:sneak#prompt = '»'
+" else
+"     let g:sneak#prompt = '>'
+" endif
+" " Repeats
+" nmap <CR> <Plug>Sneak_;
+" xmap <CR> <Plug>Sneak_;
+" nmap <bs> <Plug>Sneak_,
+" xmap <bs> <Plug>Sneak_,
+" "replace 'f' with inclusive 1-char Sneak
+" map f <Plug>Sneak_f
+" map F <Plug>Sneak_F
+" "replace 't' with exclusive 1-char Sneak
+" map t <Plug>Sneak_t
+" map T <Plug>Sneak_T
+" " Highlights
+" augroup vimrcSneakHighlight
+"     autocmd!
+"     autocmd ColorScheme * highlight clear Sneak
+"     autocmd ColorScheme * highlight clear SneakScope
+"     autocmd ColorScheme * highlight! link Sneak IncSearc
+"     autocmd ColorScheme * highlight! link SneakScope Comment
+" augroup END
+" " }}}
+
+
+" vim-shell {{{
+" Don't map, we're only using it as dependency
+let g:shell_mappings_enabled = 0
+" }}}
+
+
+" vim-startify {{{
+" If we have UTF8 capability, use it
+if has('multi_byte')
+    let g:startify_fortune_use_unicode = 1
+endif
+let g:startify_files_number        = 8
+let g:startify_session_autoload    = 0
+let g:startify_session_persistence = 0
+" Bookmarks
+let g:startify_skiplist = [
+            \ 'COMMIT_EDITMSG',
+            \ escape(fnamemodify($HOME, ':p'), '\') . 'vimfiles\\plugged\\.*\\doc',
+            \ escape(fnamemodify($VIMRUNTIME, ':p'), '\') . 'doc',
+            \ escape(fnamemodify($MYVIMRC, ':p'), '\'),
+            \ ]
+let g:startify_bookmarks = [
+            \ { 'v' : '~/vimfiles/vimrc' },
+            \ ]
+let g:startify_transformations = [
+            \ ['.*vimrc$', 'vimrc'],
+            \ ]
+" }}}
+
+
+" tagbar {{{
+" <leader>ly -> TagBar
+noremap <silent> <leader>ly      :TagbarToggle<CR>
+let g:tagbar_ctags_bin = g:ctags_location
+let g:tagbar_left = 0
+let g:tagbar_width = 40
+let g:tagbar_usearrows = 1
+" }}}
+
+
+" TOhtml {{{
+let g:html_number_lines = 1
+let g:html_use_css = 1
+let g:html_dynamic_folds = 1
+let g:html_use_encoding = 'UTF-8'
+" }}}
+
+
+" undotree {{{
+" set layout
+let g:undotree_WindowLayout = 2
+" <leader>lu -> Undo
+noremap <silent> U      :UndotreeToggle<CR>
+" }}}
+
+
 " }}}
 
 " ====================================
