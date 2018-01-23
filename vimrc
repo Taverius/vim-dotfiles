@@ -66,7 +66,6 @@ Plug 'ctrlpvim/ctrlp.vim'
 Plug 'FelikZ/ctrlp-py-matcher', Cond(has('python'))
 Plug 'sgur/ctrlp-extensions.vim'
 Plug 'DavidEGx/ctrlp-smarttabs'
-Plug 'kassio/ctrlp-bufline.vim'
 Plug 'ompugao/ctrlp-history'
 Plug 'mattn/ctrlp-mark'
 Plug 'zeero/vim-ctrlp-help'
@@ -898,7 +897,7 @@ if has('python')
 endif
 
 " register extensions
-let g:ctrlp_extensions = ['dir', 'undo', 'smarttabs', 'buffertag']
+let g:ctrlp_extensions = ['dir', 'undo', 'smarttabs', 'buffertag', 'line']
 
 " tags options
 let g:ctrlp_buftag_ctags_bin = g:ctags_location
@@ -908,7 +907,7 @@ let g:ctrlp_ext_color_command = 'SwitchToColorScheme'
 
 " binds
 " <leader>lg -> Search in current buffer
-noremap <silent> <leader>lg         :CtrlPBufLine<CR>
+noremap <silent> <leader>lg         :CtrlPLine %<CR>
 " <leader>lb -> Search buffers
 noremap <silent> <leader>lb         :CtrlPBuffer<CR>
 " <leader>lf -> Search files
@@ -1196,41 +1195,6 @@ imap <silent> <F3> <C-o><Plug>NumberToggleTrigger
 " }}}
 
 
-" " vim-sneak {{{
-" " Enable Label mode
-" let g:sneak#label = 1
-" " use s and S to go to next/prev match
-" let g:sneak#s_next = 1
-" " Use Vim case-sensitivity settings
-" let g:sneak#use_ic_scs = 1
-" " Prompt character
-" if (&termencoding ==? "utf-8") || has('gui_running')
-"     let g:sneak#prompt = '»'
-" else
-"     let g:sneak#prompt = '>'
-" endif
-" " Repeats
-" nmap <CR> <Plug>Sneak_;
-" xmap <CR> <Plug>Sneak_;
-" nmap <bs> <Plug>Sneak_,
-" xmap <bs> <Plug>Sneak_,
-" "replace 'f' with inclusive 1-char Sneak
-" map f <Plug>Sneak_f
-" map F <Plug>Sneak_F
-" "replace 't' with exclusive 1-char Sneak
-" map t <Plug>Sneak_t
-" map T <Plug>Sneak_T
-" " Highlights
-" augroup vimrcSneakHighlight
-"     autocmd!
-"     autocmd ColorScheme * highlight clear Sneak
-"     autocmd ColorScheme * highlight clear SneakScope
-"     autocmd ColorScheme * highlight! link Sneak IncSearc
-"     autocmd ColorScheme * highlight! link SneakScope Comment
-" augroup END
-" " }}}
-
-
 " vim-shell {{{
 " Don't map, we're only using it as dependency
 let g:shell_mappings_enabled = 0
@@ -1245,7 +1209,7 @@ endif
 let g:startify_files_number        = 8
 let g:startify_session_autoload    = 0
 let g:startify_session_persistence = 0
-" Bookmarks
+" Bookmarks, skip list, filters
 let g:startify_skiplist = [
             \ 'COMMIT_EDITMSG',
             \ escape(fnamemodify($HOME, ':p'), '\') . 'vimfiles\\plugged\\.*\\doc',
@@ -1258,6 +1222,10 @@ let g:startify_bookmarks = [
 let g:startify_transformations = [
             \ ['.*vimrc$', 'vimrc'],
             \ ]
+" Fortunes
+if executable('fortune-go')
+    let g:startify_custom_header_quotes = [ systemlist('fortune-go') ]
+endif
 " }}}
 
 
@@ -1332,7 +1300,7 @@ if has('menu')
     execute 'noremenu <silent> Vimrc.Tagbar<Tab>'.mapleader.'ly :TagbarToggle<CR>'
 
     " <leader>lg -> Search in current buffer
-    execute 'noremenu <silent> Vimrc.CtrlP.Grep<Tab>'.mapleader.'lg :CtrlPBufLine<CR>'
+    execute 'noremenu <silent> Vimrc.CtrlP.Grep<Tab>'.mapleader.'lg :CtrlPLine %<CR>'
     " <leader>lb -> Search buffers
     execute 'noremenu <silent> Vimrc.CtrlP.Buffers<Tab>'.mapleader.'lb :CtrlPBuffer<CR>'
     " <leader>lf -> Search files
