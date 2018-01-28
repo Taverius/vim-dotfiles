@@ -60,6 +60,8 @@ Plug 'Shougo/context_filetype.vim'
 Plug 'Shougo/echodoc.vim'
 Plug 'Shougo/neco-vim'
 Plug 'Shougo/neco-syntax'
+Plug 'roxma/vim-hug-neovim-rpc', Cond(has('python3'))
+Plug 'roxma/nvim-yarp', Cond(has('python3'))
 
 " CtrlP
 Plug 'ctrlpvim/ctrlp.vim'
@@ -764,6 +766,10 @@ endif " }}}
 
 
 packadd! matchit
+
+" vim-yarp {{{
+let g:python3_host_prog = expand('C:\Python36\python.exe')
+" }}}
 
 " vim-plug {{{
 " change how the Plug windows are opened
