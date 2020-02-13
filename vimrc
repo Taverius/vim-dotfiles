@@ -903,28 +903,37 @@ let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
 " MRU case insensitive
 let g:ctrlp_mruf_case_sensitive = 0
 
-" Set delay to prevent extra search
-let g:ctrlp_lazy_update = 350
-
-if executable('rg')
-    " Use Ripgrep
-    " Use rg in CtrlP for listing files
-    let g:ctrlp_user_command = 'rg %s -l -u --color never --smart-case -g ""'
-
-    " rg is fast enough that CtrlP doesn't need to cache
-    let g:ctrlp_use_caching = 0
-elseif executable('ag')
-    " Use The Silver Searcher
-    " Use ag in CtrlP for listing files
-    let g:ctrlp_user_command = 'ag %s -l -U --nocolor -g ""'
-
-    " ag is fast enough that CtrlP doesn't need to cache
-    let g:ctrlp_use_caching = 0
-endif
-
 " python matcher
 if has('python')
     let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
+
+    " Set delay to prevent extra search
+    let g:ctrlp_lazy_update = 350
+endif
+
+" usercommand for VCS
+let g:ctrlp_user_command = {
+            \ 'types': {
+            \ 1: ['.git', 'git --git-dir=%s ls-files -oc --exclude-standard'],
+            \ 2: ['.hg', 'hg --cwd %s locate -I .'],
+            \ }
+            \ }
+
+if executable('fd')
+    " Use fd
+    let g:ctrlp_user_command.fallback = 'fd -H -t=f -c=never "" %s'
+
+    let g:ctrlp_use_caching = 0
+elseif executable('ag')
+    " Use The Silver Searcher
+    let g:ctrlp_user_command.fallback = 'ag %s -l --nocolor --nogroup --hidden -g ""'
+
+    let g:ctrlp_use_caching = 0
+elseif executable('rg')
+    " Use Ripgrep
+    let g:ctrlp_user_command.fallback = 'rg %s -l -u --color=never --smart-case -g ""'
+
+    let g:ctrlp_use_caching = 0
 endif
 
 " register extensions
