@@ -45,21 +45,18 @@ function! Cond(cond, ...)
   return a:cond ? opts : extend(opts, { 'on': [], 'for': [] })
 endfunction
 
-" Headlights
-Plug 'mbadran/headlights', Cond(has('python'))
-
 " Startify
 Plug 'mhinz/vim-startify'
 
 " Libraries
 Plug 'tpope/vim-repeat'
-Plug 'vim-scripts/visualrepeat'
+Plug 'inkarkat/vim-visualrepeat'
 Plug 'xolox/vim-misc'
-Plug 'xolox/vim-shell'
 Plug 'Shougo/context_filetype.vim'
 Plug 'Shougo/echodoc.vim'
-Plug 'Shougo/neco-vim'
-Plug 'Shougo/neco-syntax'
+Plug 'Shougo/neco-vim', Cond(has('python3'))
+Plug 'Shougo/neco-syntax', Cond(has('python3'))
+Plug 'Shougo/neoinclude.vim', Cond(has('python3'))
 Plug 'roxma/vim-hug-neovim-rpc', Cond(has('python3'))
 Plug 'roxma/nvim-yarp', Cond(has('python3'))
 
@@ -81,19 +78,19 @@ Plug 'artnez/vim-wipeout'
 Plug 'smitajit/bufutils.vim'
 
 " Completion
-Plug 'Shougo/neocomplete.vim', Cond(has('lua'))
-Plug 'prabirshrestha/asyncomplete.vim', Cond(!has('lua'))
-Plug 'prabirshrestha/asyncomplete.vim', Cond(!has('lua'))
-Plug 'prabirshrestha/asyncomplete-buffer.vim', Cond(!has('lua'))
-Plug 'prabirshrestha/asyncomplete-necovim.vim', Cond(!has('lua'))
-Plug 'prabirshrestha/asyncomplete-necosyntax.vim', Cond(!has('lua'))
-Plug 'prabirshrestha/asyncomplete-tags.vim', Cond(!has('lua'))
+Plug 'prabirshrestha/asyncomplete.vim'
+Plug 'prabirshrestha/asyncomplete-buffer.vim'
+Plug 'prabirshrestha/asyncomplete-tags.vim'
+Plug 'prabirshrestha/asyncomplete-file.vim'
+Plug 'prabirshrestha/asyncomplete-necovim.vim', Cond(has('python3'))
+Plug 'prabirshrestha/asyncomplete-necosyntax.vim', Cond(has('python3'))
+Plug 'kyouryuukunn/asyncomplete-neoinclude.vim', Cond(has('python3'))
 
 " Tags
-Plug 'diraol/vim-easytags'
+Plug 'ludovicchabant/vim-gutentags'
 Plug 'majutsushi/tagbar'
 
-" Lightline
+" Airline
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
@@ -116,6 +113,7 @@ Plug 'junegunn/vim-pseudocl'
 Plug 'MattesGroeger/vim-bookmarks'
 Plug 'matze/vim-move'
 Plug 'mhinz/vim-grepper'
+Plug 'mhinz/vim-signify'
 Plug 'tpope/vim-abolish'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-fugitive'
@@ -768,8 +766,10 @@ endif " }}}
 packadd! matchit
 
 " vim-yarp {{{
-let g:python3_host_prog = expand('C:\Python36\python.exe')
+" let g:python3_host_prog = expand('C:\Dev\Python\38\python.exe')
+" let g:python2_host_prog = expand('C:\Dev\Python\27\python.exe')
 " }}}
+
 
 " vim-plug {{{
 " change how the Plug windows are opened
@@ -792,22 +792,39 @@ let g:airline#extensions#wordcount#enabled = 0
 
 
 " asynccomplete.vim {{{
-if !has('lua')
-    " Maps
-    inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-    inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-    inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<cr>"
+" Maps
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<cr>"
 
-    " Sources
-    augroup vimrcAsyncCompleteSources
-        autocmd!
-        autocmd CompleteDone * if pumvisible() == 0 | pclose | endif
-        autocmd User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#buffer#get_source_options({
-                    \ 'name': 'buffer',
-                    \ 'whitelist': ['*'],
-                    \ 'blacklist': ['go'],
-                    \ 'completor': function('asyncomplete#sources#buffer#completor'),
-                    \ }))
+" Sources
+augroup vimrcAsyncCompleteSources
+    autocmd!
+    autocmd CompleteDone * if pumvisible() == 0 | pclose | endif
+    autocmd User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#buffer#get_source_options({
+                \ 'name': 'buffer',
+                \ 'whitelist': ['*'],
+                \ 'blacklist': ['go'],
+                \ 'completor': function('asyncomplete#sources#buffer#completor'),
+                \ 'config': {
+                \    'max_buffer_size': 5000000,
+                \  },
+                \ }))
+    autocmd User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#tags#get_source_options({
+                \ 'name': 'tags',
+                \ 'whitelist': ['*'],
+                \ 'completor': function('asyncomplete#sources#tags#completor'),
+                \ 'config': {
+                \    'max_buffer_size': 5000000,
+                \  },
+                \ }))
+    autocmd User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#file#get_source_options({
+                \ 'name': 'file',
+                \ 'whitelist': ['*'],
+                \ 'priority': 10,
+                \ 'completor': function('asyncomplete#sources#file#completor'),
+                \ }))
+    if has('python3')
         autocmd User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#necosyntax#get_source_options({
                     \ 'name': 'necosyntax',
                     \ 'whitelist': ['*'],
@@ -818,13 +835,14 @@ if !has('lua')
                     \ 'whitelist': ['vim'],
                     \ 'completor': function('asyncomplete#sources#necovim#completor'),
                     \ }))
-        autocmd User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#tags#get_source_options({
-                    \ 'name': 'tags',
+        autocmd User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#neoinclude#get_source_options({
+                    \ 'name': 'neoinclude',
                     \ 'whitelist': ['*'],
-                    \ 'completor': function('asyncomplete#sources#tags#completor'),
+                    \ 'refresh_pattern': '\(<\|"\|/\)$',
+                    \ 'completor': function('asyncomplete#sources#neoinclude#completor'),
                     \ }))
-    augroup END
-endif
+    endif
+augroup END
 " }}}
 
 
@@ -1045,16 +1063,6 @@ augroup END
 " }}}
 
 
-" vim-easytags {{{
-let g:easytags_cmd = g:ctags_location
-" async is still bork
-" let g:easytags_async = 1
-let g:easytags_ignored_filetypes = '^\(bat|vba|tex|viki\)$'
-let g:easytags_by_filetype = expand('~/vimfiles/.cache/easytags')
-let g:easytags_python_enabled = has('python')
-" }}}
-
-
 " vim-easy-align {{{
 " Start interactive EasyAlign in visual mode (e.g. vip<Enter>)
 xmap ga <Plug>(EasyAlign)
@@ -1102,13 +1110,15 @@ let g:easy_align_delimiters = {
 
 " echodoc.vim {{{
 let g:echodoc#enable_at_startup = 1
+let g:echodoc#type = 'popup'
+highlight link EchoDocPopup Pmenu
 " }}}
 
 
 " vim-grepper {{{
 " binding
 nnoremap <leader>gg :Grepper -tool git<cr>
-nnoremap <leader>ga :Grepper -tool ag<cr>
+nnoremap <leader>ga :Grepper -tool rg<cr>
 
 nmap gs <plug>(GrepperOperator)
 xmap gs <plug>(GrepperOperator)
@@ -1152,58 +1162,12 @@ augroup END
 " }}}
 
 
-" neocomplete.vim {{{
-if has('lua')
-    let g:acp_enableAtStartup = 0
-    let g:neocomplete#enable_at_startup = 1
-    let g:neocomplete#enable_smart_case = 1
-    let g:neocomplete#enable_camel_case = 1
-
-    " Set path
-    let g:neocomplete#data_directory = expand('~/vimfiles/.cache/neocomplete')
-
-    " Define dictionary.
-    let g:neocomplete#sources#dictionary#dictionaries = {
-                \ 'default' : '',
-                \ 'vimshell' : $HOME.'/.vimshell_hist',
-                \ }
-
-    " Enable omni completion.
-    if !exists('g:neocomplete#sources#omni#input_patterns')
-        let g:neocomplete#sources#omni#input_patterns = {}
-    endif
-
-    " Ctags
-    let g:neocomplete#ctags_command = g:ctags_location
-
-    " Key mappings
-    " <CR>: close popup and save indent.
-    inoremap <expr><CR>     neocomplete#close_popup() ."<CR>"
-    " <TAB>: completion.
-    inoremap <expr><TAB>    pumvisible() ? "\<C-n>" : "\<TAB>"
-    " <C-h>, <BS>: close popup and delete backword char.
-    inoremap <expr><C-h>    neocomplete#smart_close_popup()."\<C-h>"
-    inoremap <expr><BS>     neocomplete#smart_close_popup()."\<C-h>"
-    inoremap <expr><C-y>    neocomplete#close_popup()
-    inoremap <expr><C-e>    neocomplete#cancel_popup()
-    inoremap <expr><C-g>    neocomplete#undo_completion()
-    inoremap <expr><C-l>    neocomplete#complete_common_string()
-endif
-" }}}
-
-
 " vim-numbertoggle {{{
 " Don't use the default binds
 let g:UseNumberToggleTrigger = 0
 " F3 -> Toggle relative number
 map <silent> <F3>      <Plug>NumberToggleTrigger
 imap <silent> <F3> <C-o><Plug>NumberToggleTrigger
-" }}}
-
-
-" vim-shell {{{
-" Don't map, we're only using it as dependency
-let g:shell_mappings_enabled = 0
 " }}}
 
 
