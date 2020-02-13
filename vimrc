@@ -383,6 +383,10 @@ if has('insert_expand')
     set completeopt=menuone,preview,longest
 endif
 
+if has('textprop')
+    set completeopt+=popup
+endif
+
 if has('wildmenu')
     set wildmenu        " Enable tab-complete menu.
     set wildmode=longest:full
