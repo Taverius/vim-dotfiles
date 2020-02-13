@@ -94,11 +94,9 @@ Plug 'majutsushi/tagbar'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
-" Easymotion
-Plug 'easymotion/vim-easymotion'
-Plug 'haya14busa/incsearch.vim'
-Plug 'haya14busa/incsearch-fuzzy.vim'
-Plug 'haya14busa/incsearch-easymotion.vim'
+" motions
+Plug 'justinmk/vim-sneak'
+Plug 'haya14busa/is.vim'
 Plug 'haya14busa/vim-asterisk'
 
 " Plugins
@@ -974,95 +972,6 @@ cmap <C-v> <Plug>EasyClipCommandModePaste
 "}}}
 
 
-" vim-easymotion {{{
-" We'll set out own maps, thanks
-" let g:EasyMotion_do_mapping = 0
-" Search with Smart Case as per Vim option
-let g:EasyMotion_smartcase = 1
-" Use uppercase target labels and type as a lower case
-let g:EasyMotion_use_upper = 1
-
-" sneak-alikes
-" s{char}{char} to move to {char}{char}
- map s <Plug>(easymotion-bd-f2)
-nmap s <Plug>(easymotion-overwin-f2)
-" f{char} to move to {char}
- map f <Plug>(easymotion-bd-f)
-nmap f <Plug>(easymotion-overwin-f)
-" t{char} to move beyond {char}
- map t <Plug>(easymotion-bd-t)
-omap t <Plug>(easymotion-bd-tl)
-" move between matches with n/N
-" NOTE: defined under incsearch.vim
-
-" Maps with leader
-" Move to line
- map <Leader>el <Plug>(easymotion-bd-jk)
-nmap <Leader>el <Plug>(easymotion-overwin-line)
-" Move to begginning of word
- map <Leader>ew <Plug>(easymotion-bd-w)
-nmap <Leader>ew <Plug>(easymotion-overwin-w)
-" Move to begginning of WORD
- map <Leader>eW <Plug>(easymotion-bd-W)
-" Move to end of word
- map <Leader>ee <Plug>(easymotion-bd-e)
-" Move to end of WORD
- map <Leader>eE <Plug>(easymotion-bd-E)
-
-" Incremental EasyMotion
-" You can use other keymappings like <C-l> instead of <CR> if you want to
-" use these mappings as default search and somtimes want to move cursor with
-" EasyMotion.
-function! s:incsearch_easymotion(...) abort
-  return incsearch#util#deepextend(deepcopy({
-  \   'modules': [incsearch#config#easymotion#module({'overwin': 1})],
-  \   'keymap': {
-  \     "\<CR>": '<Over>(easymotion)'
-  \   },
-  \   'is_expr': 0
-  \ }), get(a:, 1, {}))
-endfunction
-
-noremap <silent><expr> /  incsearch#go(<SID>incsearch_easymotion())
-noremap <silent><expr> ?  incsearch#go(<SID>incsearch_easymotion({'command': '?'}))
-noremap <silent><expr> g/ incsearch#go(<SID>incsearch_easymotion({'is_stay': 1}))
-
-" Incremental EasyFuzzyMotion
-function! s:incsearch_easyfuzzy(...) abort
-    return extend(copy({
-                \   'converters': [
-                \       incsearch#config#fuzzy#converter(),
-                \       incsearch#config#fuzzyspell#converter()
-                \   ],
-                \   'modules': [incsearch#config#easymotion#module({'overwin': 1})],
-                \   'keymap': {"\<CR>": '<Over>(easymotion)'},
-                \   'is_expr': 0
-                \ }), get(a:, 1, {}))
-endfunction
-
-noremap <silent><expr> z/  incsearch#go(<SID>incsearch_easyfuzzy())
-noremap <silent><expr> z?  incsearch#go(<SID>incsearch_easyfuzzy({'command': '?'}))
-noremap <silent><expr> zg/ incsearch#go(<SID>incsearch_easyfuzzy({'is_stay': 1}))
-
-" Set highlighting
-augroup vimrcEasyMotionHighlight
-    autocmd!
-    autocmd ColorScheme * highlight clear EasyMotionTarget
-    autocmd ColorScheme * highlight clear EasyMotionShade
-    autocmd ColorScheme * highlight clear EasyMotionTarget2First
-    autocmd ColorScheme * highlight clear EasyMotionTarget2Second
-    autocmd ColorScheme * highlight clear EasyMotionMoveHL
-    autocmd ColorScheme * highlight clear EasyMotionIncSearch
-    autocmd ColorScheme * highlight! link EasyMotionTarget        ErrorMsg
-    autocmd ColorScheme * highlight! link EasyMotionShade         Comment
-    autocmd ColorScheme * highlight! link EasyMotionTarget2First  MatchParen
-    autocmd ColorScheme * highlight! link EasyMotionTarget2Second MatchParen
-    autocmd ColorScheme * highlight! link EasyMotionMoveHL        Search
-    autocmd ColorScheme * highlight! link EasyMotionIncSearch     IncSearch
-augroup END
-" }}}
-
-
 " vim-easy-align {{{
 " Start interactive EasyAlign in visual mode (e.g. vip<Enter>)
 xmap ga <Plug>(EasyAlign)
@@ -1136,36 +1045,26 @@ let g:grepper.jump          = 1
 " }}}
 
 
-" incsearch.vim {{{
-" Very Magic by default
-let g:incsearch#magic = '\v'
-" Mappings that wipe the highlight
-let g:incsearch#auto_nohlsearch = 1
-map n   <Plug>(incsearch-nohl)<Plug>(easymotion-next)
-map N   <Plug>(incsearch-nohl)<Plug>(easymotion-prev)
+" vim-sneak {{{
+let g:sneak#label = 1
+ map f <Plug>Sneak_f
+ map F <Plug>Sneak_F
+ map t <Plug>Sneak_t
+ map T <Plug>Sneak_T
+" }}}
 
-map *   <Plug>(incsearch-nohl)<Plug>(asterisk-*)
-map g*  <Plug>(incsearch-nohl)<Plug>(asterisk-g*)
-map #   <Plug>(incsearch-nohl)<Plug>(asterisk-#)
-map g#  <Plug>(incsearch-nohl)<Plug>(asterisk-g#)
 
-map z*  <Plug>(incsearch-nohl0)<Plug>(asterisk-z*)
-map gz* <Plug>(incsearch-nohl0)<Plug>(asterisk-gz*)
-map z#  <Plug>(incsearch-nohl0)<Plug>(asterisk-z#)
-map gz# <Plug>(incsearch-nohl0)<Plug>(asterisk-gz#)
+" is.vim {{{
+" vim-asterisk maps
+ map *   <Plug>(asterisk-*)<Plug>(is-nohl-1)
+ map g*  <Plug>(asterisk-g*)<Plug>(is-nohl-1)
+ map #   <Plug>(asterisk-#)<Plug>(is-nohl-1)
+ map g#  <Plug>(asterisk-g#)<Plug>(is-nohl-1)
 
-" Set highlighting
-augroup vimrcIncSearchHighlight
-    autocmd!
-    autocmd ColorScheme * highlight clear IncSearchMatch
-    autocmd ColorScheme * highlight clear IncSearchMatchReverse
-    autocmd ColorScheme * highlight clear IncSearchOnCursor
-    autocmd ColorScheme * highlight clear IncSearchCursor
-    autocmd ColorScheme * highlight! link IncSearchMatch        Search
-    autocmd ColorScheme * highlight! link IncSearchMatchReverse IncSearch
-    autocmd ColorScheme * highlight! link IncSearchOnCursor     IncSearch
-    autocmd ColorScheme * highlight! link IncSearchCursor       Cursor
-augroup END
+ map z*  <Plug>(asterisk-z*)<Plug>(is-nohl-10)
+ map gz* <Plug>(asterisk-gz*)<Plug>(is-nohl-10)
+ map z#  <Plug>(asterisk-z#)<Plug>(is-nohl-10)
+ map gz# <Plug>(asterisk-gz#)<Plug>(is-nohl-10)
 " }}}
 
 
