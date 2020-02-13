@@ -110,8 +110,11 @@ Plug 'junegunn/vim-peekaboo'
 Plug 'junegunn/vim-pseudocl'
 Plug 'MattesGroeger/vim-bookmarks'
 Plug 'matze/vim-move'
-Plug 'mhinz/vim-grepper'
-Plug 'mhinz/vim-signify'
+if has('nvim') || has('patch-8.0.902')
+  Plug 'mhinz/vim-signify'
+else
+  Plug 'mhinz/vim-signify', { 'branch': 'legacy' }
+endif
 Plug 'tpope/vim-abolish'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-fugitive'
@@ -452,13 +455,19 @@ augroup END
 
 let g:ctags_location = expand('C:/Dev/Ctags/ctags')
 
-if executable('rg')
-    " Ripgrep
-    set grepprg=rg\ --vimgrep\ --no-heading\ --smart-case\ -u
-    set grepformat=%f:%l:%c:%m,%f:%l:%m
-elseif executable('ag')
+if executable('ag')
     " The Silver Searcher
     set grepprg=ag\ --vimgrep\ -U
+    set grepformat=%f:%l:%c:%m,%f:%l:%m
+elseif executable('ack')
+    " Ack
+    set grepprg=ack\ -s\ -H\ --nopager\ --nocolor\ --nogroup\ --column
+    set grepformat=%f:%l:%c:%m,%f:%l:%m
+elseif executable('findstr')
+    set grepprg=findstr\ /s\ /n\ $*\ nul
+elseif executable('rg')
+    " Ripgrep
+    set grepprg=rg\ --vimgrep\ --no-heading\ --smart-case\ -u
     set grepformat=%f:%l:%c:%m,%f:%l:%m
 endif
 
@@ -962,6 +971,14 @@ noremap <silent> <leader>lc         :CtrlPColorscheme<CR>
 " }}}
 
 
+" vim-signify {{{
+if has('nvim') || has('patch-8.0.902')
+    " default updatetime 4000ms is not good for async update
+    set updatetime=100
+endif
+" }}}
+
+
 " vim-easyclip {{{
 " Easyclip masks m (create mark), remap it to gm
 nnoremap gm m
@@ -1026,22 +1043,6 @@ augroup vimrcEchodocHighlight
     autocmd ColorScheme * highlight clear EchoDocPopup
     autocmd ColorScheme * highlight! link EchoDocPopup        Pmenu
 augroup END
-" }}}
-
-
-" vim-grepper {{{
-" binding
-nnoremap <leader>gg :Grepper -tool git<cr>
-
-nnoremap <leader>ga :Grepper<cr>
-
-nmap gs <plug>(GrepperOperator)
-xmap gs <plug>(GrepperOperator)
-" set options
-let g:grepper               = {}
-let g:grepper.tools         = ['git', 'rg', 'ag', 'ack', 'ack-grep', 'grep', 'findstr', 'pt', 'sift']
-let g:grepper.prompt_text   = '$c> '
-let g:grepper.jump          = 1
 " }}}
 
 
@@ -1141,13 +1142,13 @@ noremap <silent> U      :UndotreeToggle<CR>
 " Main menu
 if has('menu')
     " F1 -> Toggle paste
-    anoremenu Vimrc.Toggle\ Paste<Tab><F1>      :set paste!<CR>:set paste?<CR>
+    anoremenu Vimrc.Toggle\ Paste<Tab><F1>                  :set paste!<CR>:set paste?<CR>
 
     " F2 -> Toggle list
-    anoremenu Vimrc.Toggle\ List<Tab><F2>      :set list!<CR>:set list?<CR>
+    anoremenu Vimrc.Toggle\ List<Tab><F2>                   :set list!<CR>:set list?<CR>
 
     " F3 -> Toggle relative number
-    amenu <silent> Vimrc.Toggle\ Number<Tab><F3> <Plug>NumberToggleTrigger
+    amenu <silent> Vimrc.Toggle\ Number<Tab><F3>            <Plug>NumberToggleTrigger
 
     menu Vimrc.-ToggleSep- :
 
@@ -1163,14 +1164,14 @@ if has('menu')
     " F5 -> Toggle Bookmark
     " F6 -> Next Bookmark
     " F7 -> Previous Bookmark
-    amenu <silent> Vimrc.Toggle\ Bookmark<Tab><F5>   <Plug>BookmarkToggle
-    amenu <silent> Vimrc.Next\ Bookmark<Tab><F6>     <Plug>BookmarkNext
-    amenu <silent> Vimrc.Previous\ Bookmark<Tab><F7> <Plug>BookmarkPrev
+    amenu <silent> Vimrc.Toggle\ Bookmark<Tab><F5>          <Plug>BookmarkToggle
+    amenu <silent> Vimrc.Next\ Bookmark<Tab><F6>            <Plug>BookmarkNext
+    amenu <silent> Vimrc.Previous\ Bookmark<Tab><F7>        <Plug>BookmarkPrev
 
     menu Vimrc.-BookmarkSep- :
 
     " U -> Undo
-    noremenu <silent> Vimrc.Undo\ Tree<Tab>U :UndotreeToggle<CR>
+    noremenu <silent> Vimrc.Undo\ Tree<Tab>U                :UndotreeToggle<CR>
 
     " <leader>ly -> TagBar
     execute 'noremenu <silent> Vimrc.Tagbar<Tab>'.mapleader.'ly :TagbarToggle<CR>'
