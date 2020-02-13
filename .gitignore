@@ -2,3 +2,4 @@
 autoload/plug.vim
 /mine/
 /plugged/
+*tags
