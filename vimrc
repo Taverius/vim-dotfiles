@@ -900,12 +900,12 @@ let g:ctrlp_mruf_case_sensitive = 0
 let g:ctrlp_lazy_update = 350
 
 if executable('rg')
-    " Use ag in CtrlP for listing files
+    " Use Ripgrep
+    " Use rg in CtrlP for listing files
     let g:ctrlp_user_command = 'rg %s -l -u --color never --smart-case -g ""'
 
-    " ag is fast enough that CtrlP doesn't need to cache
+    " rg is fast enough that CtrlP doesn't need to cache
     let g:ctrlp_use_caching = 0
-    " Use Ripgrep
 elseif executable('ag')
     " Use The Silver Searcher
     " Use ag in CtrlP for listing files
@@ -976,11 +976,11 @@ cmap <C-v> <Plug>EasyClipCommandModePaste
 
 " vim-easymotion {{{
 " We'll set out own maps, thanks
-let g:EasyMotion_do_mapping = 0
+" let g:EasyMotion_do_mapping = 0
 " Search with Smart Case as per Vim option
 let g:EasyMotion_smartcase = 1
 " Use uppercase target labels and type as a lower case
-" let g:EasyMotion_use_upper = 1
+let g:EasyMotion_use_upper = 1
 
 " sneak-alikes
 " s{char}{char} to move to {char}{char}
@@ -991,6 +991,7 @@ nmap s <Plug>(easymotion-overwin-f2)
 nmap f <Plug>(easymotion-overwin-f)
 " t{char} to move beyond {char}
  map t <Plug>(easymotion-bd-t)
+omap t <Plug>(easymotion-bd-tl)
 " move between matches with n/N
 " NOTE: defined under incsearch.vim
 
@@ -1035,8 +1036,7 @@ function! s:incsearch_easyfuzzy(...) abort
                 \   ],
                 \   'modules': [incsearch#config#easymotion#module({'overwin': 1})],
                 \   'keymap': {"\<CR>": '<Over>(easymotion)'},
-                \   'is_expr': 0,
-                \   'is_stay': 1
+                \   'is_expr': 0
                 \ }), get(a:, 1, {}))
 endfunction
 
@@ -1111,21 +1111,28 @@ let g:easy_align_delimiters = {
 " echodoc.vim {{{
 let g:echodoc#enable_at_startup = 1
 let g:echodoc#type = 'popup'
-highlight link EchoDocPopup Pmenu
+
+augroup vimrcEchodocHighlight
+    autocmd!
+    autocmd ColorScheme * highlight clear EchoDocPopup
+    autocmd ColorScheme * highlight! link EchoDocPopup        Pmenu
+augroup END
 " }}}
 
 
 " vim-grepper {{{
 " binding
 nnoremap <leader>gg :Grepper -tool git<cr>
-nnoremap <leader>ga :Grepper -tool rg<cr>
+
+nnoremap <leader>ga :Grepper<cr>
 
 nmap gs <plug>(GrepperOperator)
 xmap gs <plug>(GrepperOperator)
 " set options
 let g:grepper               = {}
-let g:grepper.tools         = [ 'git', 'rg', 'ag', 'findstr', 'ack', 'grep', 'pt', 'sift' ]
-let g:grepper.simple_prompt = 1
+let g:grepper.tools         = ['git', 'rg', 'ag', 'ack', 'ack-grep', 'grep', 'findstr', 'pt', 'sift']
+let g:grepper.prompt_text   = '$c> '
+let g:grepper.jump          = 1
 " }}}
 
 
