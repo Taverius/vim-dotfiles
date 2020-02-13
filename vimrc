@@ -94,7 +94,7 @@ Plug 'majutsushi/tagbar'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
-" motions
+" Motions
 Plug 'justinmk/vim-sneak'
 Plug 'haya14busa/is.vim'
 Plug 'haya14busa/vim-asterisk'
@@ -103,7 +103,7 @@ Plug 'haya14busa/vim-asterisk'
 Plug 'AndrewRadev/splitjoin.vim'
 Plug 'ciaranm/securemodelines'
 Plug 'godlygeek/tabular'
-Plug 'jeetsukumaran/vim-numbertoggle'
+Plug 'jeffkreeftmeijer/vim-numbertoggle'
 Plug 'junegunn/vim-easy-align'
 Plug 'junegunn/vim-fnr'
 Plug 'junegunn/vim-peekaboo'
