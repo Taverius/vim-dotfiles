@@ -1,5 +1,5 @@
 "   vim:    foldmethod=marker
-" vimrc @ (c) Leonardo Valeri Manera, 2010, 2014, 2017
+" vimrc @ (c) Leonardo Valeri Manera, 2010-2019
 " Contains code from Ciaran McCreesh's .vimrc
 " Contains code from amix the lucky stiff's .vimrc
 " Contains code from Dominique Pelle's .vimrc
@@ -605,12 +605,8 @@ endfunction
 if has('gui_running')
     " GUI is running or is about to start.
     " Set GVim window to this size.
-    if &lines < 50
-        set lines=50
-    endif
-    if &columns < 100
-        set columns=100
-    endif
+    set lines=999
+    set columns=100
 else
     " This is console Vim.
     if exists('+lines')
