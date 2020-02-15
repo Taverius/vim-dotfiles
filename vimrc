@@ -605,7 +605,7 @@ if has('gui_running')
     " GUI is running or is about to start.
     " Set GVim window to this size.
     set lines=999
-    set columns=160
+    set columns=130
 else
     " This is console Vim.
     if exists('+lines')
