@@ -135,6 +135,7 @@ Plug 'dahu/VimLint'
 " Filetypes
 Plug 'sheerun/vim-polyglot'
 Plug 'chrisbra/csv.vim'
+Plug 'k-takata/vim-nsis'
 
 " Colorscheme Utilities
 Plug 'godlygeek/csapprox', Cond(!has('gui_running'))
@@ -144,29 +145,28 @@ Plug 'vim-scripts/AfterColors.vim'
 " Colorschemes
 Plug 'danilo-augusto/vim-afterglow'
 Plug 'sjl/badwolf'
+Plug 'chriskempson/base16-vim'
 Plug 'petobens/colorish'
-Plug 'blueshirts/darcula'
 Plug 'dracula/vim', { 'dir' : '~/vimfiles/plugged/dracula', 'as' : 'dracula.vim' }
+Plug 'ajmwagar/vim-deus'
 Plug 'whatyouhide/vim-gotham'
 Plug 'morhetz/gruvbox'
-Plug 'w0ng/vim-hybrid'
 Plug 'cocopon/iceberg.vim'
-Plug 'nanotech/jellybeans.vim'
-Plug 'tomasr/molokai'
+Plug 'kaicataldo/material.vim'
+Plug 'crusoexia/vim-monokai'
 Plug 'KeitaNakamura/neodark.vim'
 Plug 'arcticicestudio/nord-vim'
 Plug 'rakr/vim-one'
+Plug 'joshdick/onedark.vim'
+Plug 'drewtempelmeyer/palenight.vim'
 Plug 'NLKNguyen/papercolor-theme'
 Plug 'junegunn/seoul256.vim'
 Plug 'jacoborus/tender.vim'
-Plug 'chriskempson/tomorrow-theme', { 'rtp' : 'vim' }
 Plug 'KabbAmine/yowish.vim'
 
 " Local stuff
 Plug '~/vimfiles/mine/vim-colorscheme-manager'
 Plug '~/vimfiles/mine/ctrlp-colorscheme'
-" NSIS syntax
-Plug '~/vimfiles/mine/tbf-vimfiles'
 
 " Vim-DevIcons has to be loaded last
 Plug 'ryanoasis/vim-devicons'
@@ -606,7 +606,7 @@ if has('gui_running')
     " GUI is running or is about to start.
     " Set GVim window to this size.
     set lines=999
-    set columns=100
+    set columns=160
 else
     " This is console Vim.
     if exists('+lines')
