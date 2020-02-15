@@ -1114,6 +1114,12 @@ endif
 " }}}
 
 
+" vim-gutentags {{{
+" cache files in the .cache directory in vimfiles
+let g:gutentags_cache_dir = expand('~/vimfiles/.cache/gutentags')
+" }}}
+
+
 " tagbar {{{
 " <leader>ly -> TagBar
 noremap <silent> <leader>ly      :TagbarToggle<CR>
