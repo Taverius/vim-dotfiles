@@ -145,7 +145,6 @@ Plug 'vim-scripts/AfterColors.vim'
 " Colorschemes
 Plug 'danilo-augusto/vim-afterglow'
 Plug 'sjl/badwolf'
-Plug 'chriskempson/base16-vim'
 Plug 'petobens/colorish'
 Plug 'dracula/vim', { 'dir' : '~/vimfiles/plugged/dracula', 'as' : 'dracula.vim' }
 Plug 'ajmwagar/vim-deus'
