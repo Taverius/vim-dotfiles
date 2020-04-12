@@ -18,13 +18,22 @@ if has('vim_starting')
 
     let g:skip_loading_mswin = 1
 
-    if !has('gui_running')
-        set t_Co=256
-    endif
+    " if !has('gui_running')
+    "     set t_Co=256
+    " endif
 
     if v:progname =~? "evim"
         finish
     endif
+endif
+
+" Set local vimfiles directory
+if has('win32') || has('win64')
+    let $VIM_FILES = '~/vimfiles'
+    let g:vim_files = '~/vimfiles/'
+else
+    let $VIM_FILES = '~/.vim'
+    let g:vim_files = '~/.vim/'
 endif
 
 " Set this here so plugin autoload can use it
@@ -38,11 +47,7 @@ let g:mapleader = ","   " like <leader>w saves the current file.
 
 
 " Required
-if has('win32') || has('win64')
-    call plug#begin('~/vimfiles/plugged')
-else
-    call plug#begin('~/.vim/plugged')
-endif
+call plug#begin(g:vim_files . 'plugged')
 
 function! Cond(cond, ...)
   let opts = get(a:000, 0, {})
@@ -150,7 +155,7 @@ Plug 'vim-scripts/AfterColors.vim'
 Plug 'danilo-augusto/vim-afterglow'
 Plug 'sjl/badwolf'
 Plug 'petobens/colorish'
-Plug 'dracula/vim', { 'dir' : '~/vimfiles/plugged/dracula', 'as' : 'dracula.vim' }
+Plug 'dracula/vim', { 'dir' : g:vim_files . 'plugged/dracula', 'as' : 'dracula.vim' }
 Plug 'ajmwagar/vim-deus'
 Plug 'whatyouhide/vim-gotham'
 Plug 'morhetz/gruvbox'
@@ -168,8 +173,8 @@ Plug 'jacoborus/tender.vim'
 Plug 'KabbAmine/yowish.vim'
 
 " Local stuff
-Plug '~/vimfiles/mine/vim-colorscheme-manager'
-Plug '~/vimfiles/mine/ctrlp-colorscheme'
+Plug g:vim_files . 'mine/vim-colorscheme-manager'
+Plug g:vim_files . 'mine/ctrlp-colorscheme'
 
 " Vim-DevIcons has to be loaded last
 Plug 'ryanoasis/vim-devicons'
@@ -234,18 +239,11 @@ endif
 set nojoinspaces        " insert one space after a ./?/! with a join command
 silent! set cryptmethod=blowfish2
 
-if has('win32') || has('win64')
-    if !isdirectory(expand('~/vimfiles/.cache/swap'))
-        call mkdir(expand('~/vimfiles/.cache/swap'), 'p')
-    endif                   " Warn if swapdir does not exist
-    set directory^=~/vimfiles/.cache/swap//
-    " Build swap filename from path
-elseif has('linux')
-    if !isdirectory(expand('~/.vim/cache/swap'))
-        call mkdir(expand('~/.vim/cache/swap'), 'p')
-    endif                   " Warn if swapdir does not exist
-    set directory^=~/.vim/cache/swap//
-endif
+if !isdirectory(expand(g:vim_files . 'cache/swap'))
+    call mkdir(expand(g:vim_files . 'cache/swap'), 'p')
+endif                   " Warn if swapdir does not exist
+set directory^=$VIM_FILES/cache/swap//
+" Build swap filename from path
 
 try
     language en_GB      " Try to set language.
@@ -416,25 +414,14 @@ if has('wildmenu')
 endif
 
 if has('viminfo')
-    if has('win32') || has('win64')
-        set viminfo='1000,f1,h,s100,n~/vimfiles/.cache/viminfo
-    else
-        set viminfo='1000,f1,h,s100,n~/.vim/cache/viminfo
-    endif
+    let &viminfo="'1000,f1,h,s100,n" . g:vim_files . 'cache/viminfo'
                         " Enable a nice big viminfo file.
 endif
 
 if has('persistent_undo')
-    if has('win32') || has('win64')
-        if !isdirectory(expand('~/vimfiles/.cache/undo'))
-            call mkdir(expand('~/vimfiles/.cache/undo'), 'p')
-        endif
-        set undodir=~/vimfiles/.cache/undo
-    else
-        if !isdirectory(expand('~/.vim/cache/undo'))
-            call mkdir(expand('~/.vim/cache/undo'), 'p')
-        endif
-        set undodir=~/.vim/cache/undo
+    let &undodir=expand(g:vim_files . 'cache/undo')
+    if !isdirectory(&undodir)
+        call mkdir(&undodir, 'p')
     endif
     set undofile
     augroup vimrcUndoFile
@@ -451,16 +438,9 @@ if has('conceal')
 endif
 
 if has('mksession')
-    if has('win32') || has('win64')
-        if !isdirectory(expand('~/vimfiles/.cache/view'))
-            call mkdir(expand('~/vimfiles/.cache/view'), 'p')
-        endif
-        set viewdir=~/vimfiles/.cache/view
-    else
-        if !isdirectory(expand('~/.vim/cache/view'))
-            call mkdir(expand('~/.vim/cache/view'), 'p')
-        endif
-        set viewdir=~/.vim/cache/view
+    let &viewdir=expand(g:vim_files . 'cache/view')
+    if !isdirectory(&viewdir)
+        call mkdir(&viewdir, 'p')
     endif
     set viewoptions=cursor,folds,slash,unix
     let g:skipview_files = []
@@ -945,11 +925,7 @@ let g:colorscheme_switcher_exclude_builtins=1
 
 " vim-colorscheme-manager {{{
 " Put the file in with the rest of the cache stuff
-if has('win32') || has('win64')
-    let g:colorscheme_manager_file=expand('~/vimfiles/.cache/colorscheme')
-else
-    let g:colorscheme_manager_file=expand('~/.vim/cache/colorscheme')
-endif
+let g:colorscheme_manager_file=expand(g:vim_files . 'cache/colorscheme')
 " }}}
 
 
@@ -1053,7 +1029,7 @@ endif
 " Easyclip masks m (create mark), remap it to gm
 nnoremap gm m
 " Control-v pastes in insert and command mode
-map <F1>  <Plug>EasyClipToggleFormattedPaste
+ map <F1>  <Plug>EasyClipToggleFormattedPaste
 imap <C-v> <Plug>EasyClipInsertModePaste
 cmap <C-v> <Plug>EasyClipCommandModePaste
 "}}}
@@ -1159,12 +1135,12 @@ let g:startify_session_persistence = 0
 " Bookmarks, skip list, filters
 let g:startify_skiplist = [
             \ 'COMMIT_EDITMSG',
-            \ escape(fnamemodify($HOME, ':p'), '\') . 'vimfiles\\plugged\\.*\\doc',
-            \ escape(fnamemodify($VIMRUNTIME, ':p'), '\') . 'doc',
-            \ escape(fnamemodify($MYVIMRC, ':p'), '\'),
+            \ escape(fnamemodify($VIM_FILES, ':p:gs?\?/?'), '\') . '/plugged/.*/doc',
+            \ escape(fnamemodify($VIMRUNTIME, ':p:gs?\?/?'), '\') . 'doc',
+            \ escape(fnamemodify($MYVIMRC, ':p:gs?\?/?'), '\'),
             \ ]
 let g:startify_bookmarks = [
-            \ { 'v' : escape(fnamemodify($MYVIMRC, ':p'), '\') },
+            \ { 'v' : escape(fnamemodify($MYVIMRC, ':~:gs?\?/?'), '\') },
             \ ]
 let g:startify_transformations = [
             \ ['.*vimrc$', 'vimrc'],
@@ -1177,12 +1153,8 @@ endif
 
 
 " vim-gutentags {{{
-" cache files in the .cache directory in vimfiles
-if has('win32') || has('win64')
-    let g:gutentags_cache_dir = expand('~/vimfiles/.cache/gutentags')
-else
-    let g:gutentags_cache_dir = expand('~/.vim/cache/gutentags')
-endif
+" cache files in the cache directory in vimfiles
+let g:gutentags_cache_dir = expand(g:vim_files . 'cache/gutentags')
 " }}}
 
 
