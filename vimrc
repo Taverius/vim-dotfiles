@@ -38,7 +38,11 @@ let g:mapleader = ","   " like <leader>w saves the current file.
 
 
 " Required
-call plug#begin('~/vimfiles/plugged')
+if has('win32') || has('win64')
+    call plug#begin('~/vimfiles/plugged')
+else
+    call plug#begin('~/.vim/plugged')
+endif
 
 function! Cond(cond, ...)
   let opts = get(a:000, 0, {})
@@ -230,11 +234,18 @@ endif
 set nojoinspaces        " insert one space after a ./?/! with a join command
 silent! set cryptmethod=blowfish2
 
-if !isdirectory(expand('~/vimfiles/.cache/swap'))
-    call mkdir(expand('~/vimfiles/.cache/swap'), 'p')
-endif                   " Warn if swapdir does not exist
-set directory^=~/vimfiles/.cache/swap//
-                        " Build swap filename from path
+if has('win32') || has('win64')
+    if !isdirectory(expand('~/vimfiles/.cache/swap'))
+        call mkdir(expand('~/vimfiles/.cache/swap'), 'p')
+    endif                   " Warn if swapdir does not exist
+    set directory^=~/vimfiles/.cache/swap//
+    " Build swap filename from path
+elseif has('linux')
+    if !isdirectory(expand('~/.vim/cache/swap'))
+        call mkdir(expand('~/.vim/cache/swap'), 'p')
+    endif                   " Warn if swapdir does not exist
+    set directory^=~/.vim/cache/swap//
+endif
 
 try
     language en_GB      " Try to set language.
@@ -296,30 +307,43 @@ if has('diff')
 endif
 
 if has('gui_running')
-    " set guifont=Consolas:h11
-    " set guifont=Fantasque_Sans_Mono:h12
-    " set guifont=Input:h11
-    set guifont=Consolas_NF:h11
-    " set guifont=Input_NF:h11
-                            " Default font.
-    set renderoptions=type:directx
+    if has('win32') || has('win64')
+        set guifont=Consolas_NF:h11
+        set renderoptions=type:directx
+    elseif has('linux')
+        set guifont=Hack\ 11
+        if has("gui_gtk2") || has("gui_gtk3")
+            set guifont=Hack\ 11
+        elseif has("gui_photon")
+            set guifont=Hack:s11
+        elseif has("gui_kde")
+            set guifont=Hack/11/-1/5/50/0/0/0/1/0
+        elseif has("x11")
+            set guifont=-*-hack-medium-r-normal-*-*-180-*-*-m-*-*
+        else
+            set guifont=Hack:h11:cDEFAULT
+        endif
+    endif
     set clipboard=unnamed
                             " Clipboard is the unnamed register.
 
     set guioptions-=T       " Remove the toolbar
     set guioptions-=e       " Use the CUI tabline always
-elseif !empty($CONEMUBUILD)
+else
     set termencoding=utf8
-    set term=xterm
-    set t_Co=256
+    " set term=xterm
     if has('termguicolors')
         let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
         let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
         set termguicolors
+    else
+        set t_Co=256
     endif
     set mouse=a
-    let &t_AB="\e[48;5;%dm"
-    let &t_AF="\e[38;5;%dm"
+    if has('win32') || has('win64')
+        let &t_AB="\e[48;5;%dm"
+        let &t_AF="\e[38;5;%dm"
+    endif
     inoremap <Esc>[62~ <C-X><C-E>
     inoremap <Esc>[63~ <C-X><C-Y>
      noremap <Esc>[62~ <C-E>
@@ -392,15 +416,26 @@ if has('wildmenu')
 endif
 
 if has('viminfo')
-    set viminfo='1000,f1,h,s100,n~/vimfiles/.cache/viminfo
+    if has('win32') || has('win64')
+        set viminfo='1000,f1,h,s100,n~/vimfiles/.cache/viminfo
+    else
+        set viminfo='1000,f1,h,s100,n~/.vim/cache/viminfo
+    endif
                         " Enable a nice big viminfo file.
 endif
 
 if has('persistent_undo')
-    if !isdirectory(expand('~/vimfiles/.cache/undo'))
-        call mkdir(expand('~/vimfiles/.cache/undo'), 'p')
+    if has('win32') || has('win64')
+        if !isdirectory(expand('~/vimfiles/.cache/undo'))
+            call mkdir(expand('~/vimfiles/.cache/undo'), 'p')
+        endif
+        set undodir=~/vimfiles/.cache/undo
+    else
+        if !isdirectory(expand('~/.vim/cache/undo'))
+            call mkdir(expand('~/.vim/cache/undo'), 'p')
+        endif
+        set undodir=~/.vim/cache/undo
     endif
-    set undodir=~/vimfiles/.cache/undo
     set undofile
     augroup vimrcUndoFile
         autocmd!
@@ -416,10 +451,17 @@ if has('conceal')
 endif
 
 if has('mksession')
-    if !isdirectory(expand('~/vimfiles/.cache/view'))
-        call mkdir(expand('~/vimfiles/.cache/view'), 'p')
+    if has('win32') || has('win64')
+        if !isdirectory(expand('~/vimfiles/.cache/view'))
+            call mkdir(expand('~/vimfiles/.cache/view'), 'p')
+        endif
+        set viewdir=~/vimfiles/.cache/view
+    else
+        if !isdirectory(expand('~/.vim/cache/view'))
+            call mkdir(expand('~/.vim/cache/view'), 'p')
+        endif
+        set viewdir=~/.vim/cache/view
     endif
-    set viewdir=~/vimfiles/.cache/view
     set viewoptions=cursor,folds,slash,unix
     let g:skipview_files = []
     function! MakeViewCheck()
@@ -456,7 +498,23 @@ augroup vimrcSaveOnFocusLost
     autocmd FocusLost * silent! :wall
 augroup END
 
-let g:ctags_location = expand('C:/Dev/Ctags/ctags')
+if has('win32') || has('win64')
+    if executable('ctags.exe')
+        let g:ctags_location = 'ctags.exe'
+    else
+        let g:ctags_location = expand('C:/Dev/Ctags/ctags')
+    endif
+else
+    if executable('ctags-universal')
+        let g:ctags_location = 'ctags-universal'
+    elseif executable('ctags-exuberant')
+        let g:ctags_location = 'ctags-exuberant'
+    elseif executable('exctags')
+        let g:ctags_location = 'exctags'
+    else
+        let g:ctags_location = 'ctags'
+    endif
+endif
 
 if executable('ag')
     " The Silver Searcher
@@ -887,7 +945,11 @@ let g:colorscheme_switcher_exclude_builtins=1
 
 " vim-colorscheme-manager {{{
 " Put the file in with the rest of the cache stuff
-let g:colorscheme_manager_file=expand('~/vimfiles/.cache/colorscheme')
+if has('win32') || has('win64')
+    let g:colorscheme_manager_file=expand('~/vimfiles/.cache/colorscheme')
+else
+    let g:colorscheme_manager_file=expand('~/.vim/cache/colorscheme')
+endif
 " }}}
 
 
@@ -1081,7 +1143,7 @@ let g:sneak#label = 1
 " Don't use the default binds
 let g:UseNumberToggleTrigger = 0
 " F3 -> Toggle relative number
-map <silent> <F3>      <Plug>NumberToggleTrigger
+ map <silent> <F3>      <Plug>NumberToggleTrigger
 imap <silent> <F3> <C-o><Plug>NumberToggleTrigger
 " }}}
 
@@ -1102,7 +1164,7 @@ let g:startify_skiplist = [
             \ escape(fnamemodify($MYVIMRC, ':p'), '\'),
             \ ]
 let g:startify_bookmarks = [
-            \ { 'v' : '~/vimfiles/vimrc' },
+            \ { 'v' : escape(fnamemodify($MYVIMRC, ':p'), '\') },
             \ ]
 let g:startify_transformations = [
             \ ['.*vimrc$', 'vimrc'],
@@ -1116,7 +1178,11 @@ endif
 
 " vim-gutentags {{{
 " cache files in the .cache directory in vimfiles
-let g:gutentags_cache_dir = expand('~/vimfiles/.cache/gutentags')
+if has('win32') || has('win64')
+    let g:gutentags_cache_dir = expand('~/vimfiles/.cache/gutentags')
+else
+    let g:gutentags_cache_dir = expand('~/.vim/cache/gutentags')
+endif
 " }}}
 
 
@@ -1309,7 +1375,7 @@ if has('menu')
     menu Vimrc.Utility.-CopeSep- :
 
     " Remove the Windows ^M - when the encodings gets messed up.
-    execute 'noremenu Vimrc.Utility.Fix\ Win\ Encode<Tab>'.mapleader.'m mmHmt:%s/<C-V><CR>//ge<CR>'."'".'tzt'."'".'m'
+    execute 'noremenu Vimrc.Utility.Fix\ Win\ Encode<Tab>'.mapleader.'M mmHmt:%s/<C-V><CR>//ge<CR>'."'".'tzt'."'".'m'
     menu Vimrc.Utility.-EncodeSep- :
 
     " Menu for folding
