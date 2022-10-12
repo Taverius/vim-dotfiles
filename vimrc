@@ -306,7 +306,21 @@ endif
 
 if has('gui_running')
     if has('win32') || has('win64')
-        set guifont=FiraCode_NF:h12
+        " Honestly the cleanest of the lot
+        " set guifont=CaskaydiaCove_NF_Mono:h13:W300
+        " Self-patched with -w -s -c
+        " set guifont=Consolas_NFM:h14
+        " Hilarious flair. Readability might suffer a bit, but that SWAG BOII
+        " set guifont=FantasqueSansMono_NFM:h14
+        " I find the serifs a bit too square
+        " set guifont=JetBrainsMono_NFM:h13:W300
+        " Hasklug's ligatures don't seem to show on windows GUI
+        " set guifont=Hasklug_NFM:h13
+        " VictorMono's italic has rendering issues on windows GUI
+        " set guifont=VictorMono_NFM:h14
+
+        " Fall back onto Cascadia Code and Consolas
+        set guifont=FantasqueSansMono_NFM:h14,CaskaydiaCove_NF_Mono:h13:W300,Cascadia_Code_PL:h13:W300,Consolas:h14
         set renderoptions=type:directx
     elseif has('linux')
         set guifont=Hack\ 11
