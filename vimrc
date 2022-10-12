@@ -193,7 +193,7 @@ call plug#end()
 set number              " Show line numbers.
 set shiftwidth=4        " Indent 4 spaces by default.
 set softtabstop=4       " Use 4 spaces instead of a Tab.
-set tabstop=8           " Tabs use 4 spaces.
+set tabstop=8           " Tabs use 8 spaces.
 set shiftround          " Round indent (<,>) to multiples of 'shiftwidth'
 set expandtab           " Convert tabs to spaces.
 set lazyredraw          " Avoid redrawing the screen mid-command
@@ -306,7 +306,7 @@ endif
 
 if has('gui_running')
     if has('win32') || has('win64')
-        set guifont=Consolas_NF:h11
+        set guifont=FiraCode_NF:h12
         set renderoptions=type:directx
     elseif has('linux')
         set guifont=Hack\ 11
@@ -411,6 +411,10 @@ endif
 if has('wildmenu')
     set wildmenu        " Enable tab-complete menu.
     set wildmode=longest:full
+endif
+
+if has('wildignore')
+    set wildoptions=fuzzy,pum
 endif
 
 if has('viminfo')
