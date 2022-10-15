@@ -642,7 +642,7 @@ function! SyntaxItem()
 endfunction
 
 " <leader>syn -> show syntax group under cursor
-noremap <silent> <Leader>syn :echo <SID>SyntaxItem()<CR>
+noremap <silent> <Leader>syn :echo SyntaxItem()<CR>
 
 function! CmdLine(str)
     exe "menu Foo.Bar :" . a:str
